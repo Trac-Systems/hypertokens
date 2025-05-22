@@ -35,6 +35,10 @@ class Trac20Contract extends Contract {
                 addr : { type : "is_hex" }
             }
         });
+
+        this.messageHandler(async function(){
+
+        });
     }
 
     async deploy(){
