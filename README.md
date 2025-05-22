@@ -23,6 +23,19 @@ npm install
 pear run . store1
 ```
 
+## Update
+
+```shell
+cd trac20
+git clone https://github.com/Trac-Systems/trac20.git temp
+```
+
+```js
+cp -fr temp/* .
+rm -fr temp
+pear run . store1
+```
+
 Use the commands in the Trac20 section to deploy, mint, transfer.
 
 If your peer errors "not writable", just restart to auto-join.
