@@ -45,7 +45,7 @@ class Trac20Protocol extends Protocol{
         console.log("- /deploy | specify a token ticker, supply and max amount per mint: /deploy --ticker \"gen\" --supply \"30000000\" --amount \"1000\" --decimals 18");
         console.log("- /mint | mint a token: /mint --ticker \"gen\"");
         console.log("- /transfer | transfer to another address from your token balance: /transfer --ticker \"gen\" --amount \"32.555\" --to \"7618eb9ca22ddd9cc740559af65598608d81725db2fb30ebfd83cf474984938b\"");
-        console.log("- /balance | check your token balance: /balance --ticker \"gen\"");
+        console.log("- /balance | check your token balance (append --address <address> to check other balances): /balance --ticker \"gen\"");
     }
 
     async _transact(command, args){

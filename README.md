@@ -25,6 +25,8 @@ pear run . store1
 
 Use the commands in the Trac20 section to deploy, mint, transfer.
 
+To simulate transactions, append a "--sim 1" to your Trac20 commands.
+
 Chat system is enabled.
 
 To enable log output in the terminal (what's minting), set the following to true in the index.js:
