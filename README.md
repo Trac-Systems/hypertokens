@@ -13,7 +13,7 @@ This contract is instantly executable, see instructions below.
 Make sure to have git and node installed.
 
 ```shell
-git clone git@github.com:Trac-Systems/trac20.git
+git clone https://github.com/Trac-Systems/trac20.git
 ```
 
 ```js
@@ -24,6 +24,8 @@ pear run . store1
 ```
 
 Use the commands in the Trac20 section to deploy, mint, transfer.
+
+If your peer errors "not writable", just restart to auto-join.
 
 To simulate transactions, append a "--sim 1" to your Trac20 commands.
 
