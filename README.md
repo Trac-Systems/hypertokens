@@ -33,6 +33,7 @@ git clone https://github.com/Trac-Systems/trac20.git temp
 ```js
 cp -fr temp/* .
 rm -fr temp
+npm install
 pear run . store1
 ```
 
