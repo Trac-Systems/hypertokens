@@ -14,11 +14,11 @@ msb_opts.store_name = getStorePath() + '/t20msb';
 const peer_opts = {};
 peer_opts.protocol = Trac20Protocol;
 peer_opts.contract = Trac20Contract;
-peer_opts.bootstrap = '58ea469383feba0f382877b18960dd59ea7aabd8fd57b221631cf9609aa232e5';
+peer_opts.bootstrap = '4fb9aee3db7155034284f08ed443e49a51e6efb978c7bdc1324930fd28abd3f8';
 peer_opts.channel = '00000000000000000000000000trac20';
 peer_opts.store_name = getStorePath() + '/trac20';
-peer_opts.enable_logs = false;
-peer_opts.enable_txlogs = false;
+peer_opts.enable_logs = true;
+peer_opts.enable_txlogs = true;
 
 export const app = new App(msb_opts, peer_opts);
 await app.start();
