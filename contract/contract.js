@@ -111,6 +111,7 @@ class Trac20Contract extends Contract {
     }
 
     async transfer(){
+        if((this.address+'').trim().toLowerCase() === (this.value.addr+'').trim().toLowerCase()) return new Error('Cannot send to yourself');
         const tick = this.protocol.safeJsonStringify(this.value.tick);
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
