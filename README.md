@@ -29,6 +29,8 @@ Chat system is enabled.
 
 To enable log output in the terminal (what's minting), set the following to true in the index.js:
 
+```js
 peer_opts.enable_logs = true;
 peer_opts.enable_txlogs = false;
+```
 
