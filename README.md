@@ -4,7 +4,7 @@ A proposal for a gasless p2p token standard on Trac Network. See /contract/contr
 
 Trac20 defines the most simplistic token standard possible and can be operated in terminal (no special transactions required).
 
-Inter-contract interaction can be achieved through the use of Trac Features (e.g. for marketplaces).
+Inter-contract interaction can be achieved through the use of Trac Features (e.g. for marketplaces like [Hypermall](https://github.com/Trac-Systems/hypermall-downloads)).
 
 This contract is instantly executable, see instructions below.
 
