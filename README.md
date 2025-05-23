@@ -4,6 +4,8 @@ A proposal for a gasless p2p token standard on Trac Network. See /contract/contr
 
 Trac20 defines the most simplistic token standard possible and can be operated in terminal (no special transactions required).
 
+It supports signed and fair mints. Signed mints enable deployers to limit mints for selected wallets.
+
 Inter-contract interaction can be achieved through the use of Trac Features (e.g. for marketplaces like [Hypermall](https://github.com/Trac-Systems/hypermall-downloads)).
 
 This contract is instantly executable, see instructions below.
@@ -26,7 +28,7 @@ pear run . store1
 ## Update
 
 ```shell
-cd trac20
+cd trac20 (if not already done)
 git clone https://github.com/Trac-Systems/trac20.git temp
 ```
 
