@@ -71,6 +71,8 @@ class Trac20Contract extends Contract {
                 await _this.put('migration1', true);
             }
         });
+
+        this.messageHandler(async function(){ });
     }
 
     async deploy(){
