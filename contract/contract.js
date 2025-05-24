@@ -133,6 +133,7 @@ class Trac20Contract extends Contract {
         const supply = this.protocol.safeBigInt(deployment.supply);
         let amt = this.protocol.safeBigInt(deployment.amt);
         let com = this.protocol.safeBigInt(deployment.com);
+        if(null === supply || null === amt || null === com) return new Error('Invalid bigint');
         let left = supply - com;
         if(left > 0n){
             if(amt > left) amt = left;
@@ -141,6 +142,7 @@ class Trac20Contract extends Contract {
                 balance = 0n;
             } else {
                 balance = this.protocol.safeBigInt(balance);
+                if(null === balance) return new Error('Invalid balance');
             }
             balance += amt;
             com += amt;
@@ -174,6 +176,7 @@ class Trac20Contract extends Contract {
             from_balance = 0n;
         } else {
             from_balance = this.protocol.safeBigInt(from_balance);
+            if(null === from_balance) return new Error('Invalid from balance');
         }
         from_balance -= amt;
         if(from_balance < 0n) return new Error('Insufficient funds');
@@ -182,6 +185,7 @@ class Trac20Contract extends Contract {
             to_balance = 0n;
         } else {
             to_balance = this.protocol.safeBigInt(to_balance);
+            if(null === to_balance) return new Error('Invalid to balance');
         }
         to_balance += amt;
         await this.put('b/'+this.address+'/'+tick, from_balance.toString());
