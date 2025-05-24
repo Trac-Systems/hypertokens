@@ -19,8 +19,8 @@ peer_opts.contract = Trac20Contract;
 peer_opts.bootstrap = 'c8d69852fe7828709349a68c61c3d88ab9078ec4331e07ebaaf1e8b55e67a287';
 peer_opts.channel = '00000000000000000000000002trac20';
 peer_opts.store_name = getStorePath() + '/trac20_2';
-peer_opts.enable_logs = true;
-peer_opts.enable_txlogs = true;
+peer_opts.enable_logs = false;
+peer_opts.enable_txlogs = false;
 
 // upgrade 1 to 2
 const old_path = getStorePath() + "/trac20";
