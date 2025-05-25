@@ -131,7 +131,7 @@ class Trac20Protocol extends Protocol{
                 const length = await this.api.getTxLength(false);
                 let cnt = 0;
                 const out = {};
-                for(let i = 0; i < length; i++){
+                for(let i = length - 1 ; i > 0; i--){
                     if(cnt >= 10) break;
                     const tx = await this.api.getTx(i, false);
                     if(null === tx.err && tx.val.type === 'mint'){
@@ -141,7 +141,7 @@ class Trac20Protocol extends Protocol{
                             deployment.amt = this.fromBigIntString(deployment.amt, deployment.dec);
                             deployment.supply = this.fromBigIntString(deployment.supply, deployment.dec);
                             deployment.com = this.fromBigIntString(deployment.com, deployment.dec);
-                            out[tx.val.value.tick] = deployment
+                            out[tx.val.value.tick] = deployment;
                             cnt += 1;
                         }
                     }

@@ -13,8 +13,8 @@
     }
   },
   "dependencies": {
-    "trac-peer": "^0.1.93",
-    "trac-msb": "^0.1.76",
+    "trac-peer": "^0.1.96",
+    "trac-msb": "^0.1.78",
     "htm": "^3.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
