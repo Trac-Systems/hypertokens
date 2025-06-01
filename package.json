@@ -1,10 +1,10 @@
 {
-  "name": "trac20",
+  "name": "hypertokens",
   "version": "0.0.1",
   "type": "module",
   "main": "index.js",
   "pear": {
-    "name": "trac20",
+    "name": "hypertokens",
     "type": "terminal",
     "gui": {
       "backgroundColor": "#1F2430",

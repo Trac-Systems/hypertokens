@@ -1,7 +1,6 @@
 import {Protocol} from "trac-peer";
-import {tx} from "trac-peer/src/functions.js";
 
-class Trac20Protocol extends Protocol{
+class HypertokensProtocol extends Protocol{
     constructor(peer, base, options = {}) {
         super(peer, base, options);
     }
@@ -183,4 +182,4 @@ class Trac20Protocol extends Protocol{
     }
 }
 
-export default Trac20Protocol;
+export default HypertokensProtocol;

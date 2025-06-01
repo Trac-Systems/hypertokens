@@ -1,6 +1,6 @@
 import {Contract} from 'trac-peer'
 
-class Trac20Contract extends Contract {
+class HypertokensContract extends Contract {
     constructor(protocol, options = {}) {
         super(protocol, options);
 
@@ -205,4 +205,4 @@ class Trac20Contract extends Contract {
     }
 }
 
-export default Trac20Contract;
+export default HypertokensContract;

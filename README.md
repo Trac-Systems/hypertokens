@@ -1,8 +1,8 @@
-# Trac20
+# Hypertokens
 
 A proposal for a gasless p2p token standard on Trac Network. See /contract/contract.js and /contract/protocol.js.
 
-Trac20 defines the most simplistic token standard possible and can be operated in terminal (no special transactions required).
+Hypertokens define the most simplistic token standard possible and can be operated in terminal (no special transactions required).
 
 It supports signed and fair mints. Signed mints enable deployers to limit mints for selected wallets.
 
@@ -15,11 +15,11 @@ This contract is instantly executable, see instructions below.
 Make sure to have git and node installed.
 
 ```shell
-git clone https://github.com/Trac-Systems/trac20.git
+git clone https://github.com/Trac-Systems/hypertokens.git
 ```
 
 ```js
-cd trac20
+cd hypertokens
 npm install -g pear
 npm install
 pear run . store1
@@ -28,8 +28,8 @@ pear run . store1
 ## Update
 
 ```shell
-cd trac20 (if not already done)
-git clone https://github.com/Trac-Systems/trac20.git temp
+cd hypertokens (if not already done)
+git clone https://github.com/Trac-Systems/hypertokens.git temp
 ```
 
 ```js
@@ -39,11 +39,11 @@ npm update
 pear run . store1
 ```
 
-Use the commands in the Trac20 section to deploy, mint, transfer.
+Use the commands in the Hypertokens section to deploy, mint, transfer.
 
 If your peer errors "not writable", just restart to auto-join.
 
-To simulate transactions, append a "--sim 1" to your Trac20 commands.
+To simulate transactions, append a "--sim 1" to your Hypertokens commands.
 
 Chat system is enabled.
 
