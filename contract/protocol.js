@@ -40,7 +40,7 @@ class HypertokensProtocol extends Protocol{
 
     async printOptions(){
         console.log(' ');
-        console.log('- Trac20 Commands:');
+        console.log('- Hypertokens Command List:');
         console.log("- /deploy | specify a token ticker, supply and max amount per mint: '/deploy --ticker \"gen\" --supply \"30000000\" --amount \"1000\" --decimals 18' | Optionally use '--signed 1' to only allow mints that you approved");
         console.log("- /mint | mint a token: '/mint --ticker \"gen\"'. If this is a signed mint, add the signature and the nonce and optional data: --sig \"<signature>\" --nonce \"<nonce>\" --data \"<data>\" ");
         console.log("- /sign_mint | sign a mint for a specific address (if signed is enabled in deploy): '/sign_mint --ticker \"<ticker>\" --address \"<address>\"'. If the mint contains a data field, it needs to be signed, too: --data \"<data>\"");
