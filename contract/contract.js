@@ -81,7 +81,7 @@ class HypertokensContract extends Contract {
         const _dec = parseInt(this.value.dec);
         const _amt = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.amt, this.value.dec));
         const _supply = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.supply, this.value.dec));
-        if(isNaN(_dec) || _dec <= 0 || _dec > 18) return new Error('Invalid decimals');
+        if(isNaN(_dec) || _dec < 0 || _dec > 18) return new Error('Invalid decimals');
         if(null === _amt || _amt <= 0n || _amt > _supply) return new Error('Invalid amount');
         if(null === _supply || _supply <= 0n) return new Error('Invalid supply');
         const key = 'd/'+this.protocol.safeJsonStringify(tick);
