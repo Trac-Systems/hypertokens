@@ -160,7 +160,7 @@ class HypertokensProtocol extends Protocol{
 
     mapTxCommand(command){
         let obj = { type : '', value : null };
-        const json = command;
+        const json = typeof command === 'string' ? this.safeJsonParse(command) : command;
         if(json.op !== undefined){
             switch(json.op){
                 case 'deploy':
@@ -415,7 +415,7 @@ class HypertokensProtocol extends Protocol{
                             fun_amt = args.amount.trim();
                         }
                         const nonce = this.generateNonce();
-                        const sig = this.peer.wallet.sign(args.ticker.trim().toLowerCase() + fun_amt + args.address.trim() + (args.data !== undefined ? args.data.trim() : '') + nonce);
+                        const sig = this.peer.wallet.sign(args.ticker.trim().toLowerCase() + fun_amt + args.address.trim() + this.peer.bootstrap + (args.data !== undefined ? args.data.trim() : '') + nonce);
                         console.log('Send the following command to the minter:');
                         console.log('');
                         console.log('/mint --ticker "'+args.ticker.trim().toLowerCase()+fun+'" --sig "'+sig+'" --nonce "'+nonce+'"' + (args.data !== undefined ? ' --data "'+args.data.trim()+'"' : ''));
@@ -503,7 +503,7 @@ class HypertokensProtocol extends Protocol{
                     console.log('Invalid token');
                 } else{
                     const nonce = this.generateNonce();
-                    const sig = this.peer.wallet.sign(args.ticker.trim().toLowerCase() + args.to + args.amount + this.peer.wallet.publicKey + (args.data !== undefined ? args.data.trim() : '') + nonce);
+                    const sig = this.peer.wallet.sign(args.ticker.trim().toLowerCase() + args.to + args.amount + this.peer.wallet.publicKey + this.peer.bootstrap + (args.data !== undefined ? args.data.trim() : '') + nonce);
                     console.log('Send the following command to the intended receiver:');
                     console.log('');
                     console.log('/transfer --ticker "'+args.ticker.trim().toLowerCase()+'" --from "'+this.peer.wallet.publicKey+'" --to "'+args.to+'" --amount "'+args.amount+'" --sig "'+sig+'" --nonce "'+nonce+'"' + (args.data !== undefined ? ' --data "'+args.data.trim()+'"' : ''));
@@ -590,7 +590,7 @@ class HypertokensProtocol extends Protocol{
                 if(args.to === undefined) throw new Error('Please specify a to address');
                 const nonce = this.generateNonce();
                 let tap_deployment = await this.get(this.getDeploymentKey(this.peer.contract_instance.tap_token));
-                const sig = this.peer.wallet.sign(tap_deployment.tick + args.to + args.amount + this.peer.wallet.publicKey + (args.data !== undefined ? args.data.trim() : '') + nonce);
+                const sig = this.peer.wallet.sign(tap_deployment.tick + args.to + args.amount + this.peer.wallet.publicKey + this.peer.bootstrap + (args.data !== undefined ? args.data.trim() : '') + nonce);
                 console.log('Send the following command to the intended receiver:');
                 console.log('');
                 console.log('/tap_transfer --from "'+this.peer.wallet.publicKey+'" --to "'+args.to+'" --amount "'+args.amount+'" --sig "'+sig+'" --nonce "'+nonce+'"' + (args.data !== undefined ? ' --data "'+args.data.trim()+'"' : ''));

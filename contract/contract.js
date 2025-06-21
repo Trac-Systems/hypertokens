@@ -281,7 +281,7 @@ class HypertokensContract extends Contract {
             if(null === this.value.nonce) return new Error('No nonce given');
             if(null === this.value.sig) return new Error('No sig given');
             if(null !== await this.get('s/'+this.value.sig)) return new Error('Sig exists');
-            let sig_value = this.value.tick.trim().toLowerCase() + this.address;
+            let sig_value = this.value.tick.trim().toLowerCase() + this.address + this.protocol.peer.bootstrap;
             if(null !== this.value.dta) {
                 sig_value += this.value.dta;
             }
@@ -348,7 +348,7 @@ class HypertokensContract extends Contract {
             if(null === this.value.nonce) return new Error('No nonce given');
             if(null === this.value.sig) return new Error('No sig given');
             if(null !== await this.get('s/'+this.value.sig)) return new Error('Sig exists');
-            let sig_value = this.value.tick.trim().toLowerCase() + this.value.amt + this.address;
+            let sig_value = this.value.tick.trim().toLowerCase() + this.value.amt + this.address + this.protocol.peer.bootstrap;
             if(null !== this.value.dta) {
                 sig_value += this.value.dta;
             }
@@ -590,7 +590,7 @@ class HypertokensContract extends Contract {
         let address = this.address;
         if(null !== this.value.from && null !== this.value.sig && null !== this.value.nonce){
             if(null !== await this.get('s/'+this.value.sig)) return new Error('Sig exists');
-            let sig_value = this.value.tick.trim().toLowerCase() + this.value.addr + this.value.amt + this.value.from;
+            let sig_value = this.value.tick.trim().toLowerCase() + this.value.addr + this.value.amt + this.value.from + this.protocol.peer.bootstrap;
             if(null !== this.value.dta) {
                 sig_value += this.value.dta;
             }
@@ -604,8 +604,8 @@ class HypertokensContract extends Contract {
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
-        if(this.value.addr.length < 64) return new Error('Invalid address');
-        if(address.length < 64) return new Error('Invalid address');
+        if(this.value.addr.length !== 64) return new Error('Invalid address');
+        if(address.length !== 64) return new Error('Invalid address');
         const amt = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.amt, deployment.dec));
         if(null === amt || amt <= 0n) return new Error('Invalid amount');
         let from_balance = await this.get('b/'+address+'/'+tick);
@@ -722,11 +722,11 @@ class HypertokensContract extends Contract {
 
     async transferFeature(){
         let address = this.address;
-        if(this.value.addr.length < 64) return new Error('Invalid address');
-        if(address.length < 64) return new Error('Invalid address');
+        if(this.value.addr.length !== 64) return new Error('Invalid address');
+        if(address.length !== 64) return new Error('Invalid address');
         if(null !== this.value.from && null !== this.value.sig && null !== this.value.nonce){
             if(null !== await this.get('s/'+this.value.sig)) return new Error('Sig exists');
-            let sig_value = this.value.tick.trim().toLowerCase() + this.value.addr + this.value.amt + this.value.from;
+            let sig_value = this.value.tick.trim().toLowerCase() + this.value.addr + this.value.amt + this.value.from + this.protocol.peer.bootstrap;
             if(null !== this.value.dta) {
                 sig_value += this.value.dta;
             }
