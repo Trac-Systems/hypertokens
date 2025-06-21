@@ -115,8 +115,8 @@ class HypertokensContract extends Contract {
                 addr : { type : "is_hex" },
                 dta : { type : "string", min: 1, max: 512, nullable : true },
                 from : { type : "is_hex", nullable : true },
-                sig : { type : "is_hex" },
-                nonce : { type : "string", min: 1, max: 512 }
+                sig : { type : "is_hex", nullable : true },
+                nonce : { type : "string", min: 1, max: 512, nullable : true }
             }
         });
 

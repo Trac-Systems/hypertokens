@@ -243,6 +243,8 @@ class HypertokensProtocol extends Protocol{
         console.log(' ');
         console.log("- /tap_balance | check your TAP balance. TAP is a Bitcoin token and required as gas + liquidity asset: '/tap_balance'");
         console.log(' ');
+        console.log("- /tapwarp | transfer your TAP tokens to Hypermall for trading: '/tapwarp --amount \"10\"'");
+        console.log(' ');
         console.log('- /get_tap_deposit_link | enter a TAP token amount to generate a deposit link: \'/get_tap_deposit_link --amount "<amount>"\'');
         console.log(' ');
         console.log('- /get_tap_withdraw_link | enter the transaction hash of your withdraw request to generate a redeem link: \'/get_tap_withdraw_link --tx "<transaction hash>"\'.');
@@ -563,6 +565,25 @@ class HypertokensProtocol extends Protocol{
                     dta : dta
                 };
                 await this._transact(command, args);
+            } if (input.startsWith("/tapwarp")) {
+                const args = this.parseArgs(input);
+                if(args.amount === undefined) throw new Error('Please specify an amount');
+                const tap_deployment = await this.get(this.getDeploymentKey(this.peer.contract_instance.tap_token));
+                if(null !== tap_deployment){
+                    const command = {
+                        op : 'tap-transfer',
+                        tick : this.peer.contract_instance.tap_token,
+                        amt : args.amount,
+                        addr : this.peer.contract_instance.graduation_authority,
+                        from : null,
+                        sig : null,
+                        nonce : null,
+                        dta : null
+                    };
+                    await this._transact(command, args);
+                } else {
+                    console.log('TAP Token does not exist.');
+                }
             } else if (input.startsWith("/sign_tap_transfer")) {
                 const args = this.parseArgs(input);
                 if(args.amount === undefined) throw new Error('Please specify an amount');
