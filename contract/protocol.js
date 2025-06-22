@@ -216,45 +216,28 @@ class HypertokensProtocol extends Protocol{
         console.log('- Hypertokens Command List:');
         console.log(' ');
         console.log("- /hyperfun | specify a token ticker to launch a Hyperfun project at default settings. (0.003 TAP target price, 100mln supply, 300000 TAP mcap and 100 Bitcoin blocks duration): '/hyperfun --ticker \"gen\"'. Use /deploy below if you need granularity over target price/supply.");
-        console.log(' ');
         console.log("- /deploy | specify a token ticker, supply and max amount per mint: '/deploy --ticker \"gen\" --supply \"30000000\" --amount \"1000\" --decimals 18' | Optionally use '--signed 1' to only allow mints that you approved. Use --funprice 0.003 and --funblocks 10 to make this a HyperFun mint. 18 decimals are mandatory for Hyperfun.");
-        console.log(' ');
         console.log("- /mint | mint a token: '/mint --ticker \"gen\"'. If this is a signed mint, add the signature and the nonce and optional data: --sig \"<signature>\" --nonce \"<nonce>\" --data \"<data>\". If this is a HyperFun mint, then you have to pass --amount and speficy how much you want to mint. The limit is specified by the deployment.");
-        console.log(' ');
         console.log("- /sign_mint | sign a mint for a specific address (if signed is enabled in deploy): '/sign_mint --ticker \"<ticker>\" --address \"<address>\"'. If the mint contains a data field, it needs to be signed, too: --data \"<data>\"");
-        console.log(' ');
         console.log("- /refun | refund TAP from an expired HyperFun token that didn't graduate: '/refun --ticker \"gen\"'");console.log(' ');
-        console.log(' ');
         console.log("- /burnfun | burn your tokens and return TAP from the reserve at the guaranteed floor price: '/burnfun --ticker \"gen\" --amount \"1000\"'");console.log(' ');
-        console.log(' ');
         console.log("- /transfer | transfer to another address from your token balance: '/transfer --ticker \"gen\" --amount \"32.555\" --to \"7618eb9ca22ddd9cc740559af65598608d81725db2fb30ebfd83cf474984938b\"'");
-        console.log(' ');
         console.log("- /sign_transfer | sign a transfer for a specific address: '/sign_transfer --ticker \"<ticker>\" --to \"<address>\" --amount \"32.555\"'. If the transfer contains a data field, it needs to be signed, too: --data \"<data>\"");
-        console.log(' ');
+        console.log("- /redeem | Redeem a voucher to receive Hypertokens or TAP: '/redeem --voucher <voucher>'");
         console.log("- /token | check the status of a token (completion, supply, limits, etc): '/token --ticker \"gen\"'");
-        console.log(' ');
         console.log("- /whats_minting | Check the latest 10 tokens that are minting.");
-        console.log(' ');
         console.log("- /balance | check your token balance (append --address <address> to check other balances): '/balance --ticker \"gen\"'");
-        console.log(' ');
         console.log("- /hyperwarp | transfer your tokens to Hypermall for trading: '/hyperwarp --ticker \"gen\" --amount \"1000\"'");
         console.log(' ');
         console.log('- TAP Command List:');
         console.log(' ');
         console.log("- /tap_balance | check your TAP balance. TAP is a Bitcoin token and required as gas + liquidity asset: '/tap_balance'");
-        console.log(' ');
         console.log("- /tapwarp | transfer your TAP tokens to Hypermall for trading: '/tapwarp --amount \"10\"'");
-        console.log(' ');
         console.log('- /get_tap_deposit_link | enter a TAP token amount to generate a deposit link: \'/get_tap_deposit_link --amount "<amount>"\'');
-        console.log(' ');
         console.log('- /get_tap_withdraw_link | enter the transaction hash of your withdraw request to generate a redeem link: \'/get_tap_withdraw_link --tx "<transaction hash>"\'.');
-        console.log(' ');
         console.log("- /tap_transfer | transfer TAP to another Trac address from your token balance: '/transfer --amount \"10\" --to \"7618eb9ca22ddd9cc740559af65598608d81725db2fb30ebfd83cf474984938b\"'");
-        console.log(' ');
         console.log("- /sign_tap_transfer | sign a TAP transfer for a specific Trac address: '/sign_tap_transfer --to \"<address>\" --amount \"10\"'. If the transfer contains a data field, it needs to be signed, too: --data \"<data>\"");
-        console.log(' ');
         console.log('- /my_tap_withdraw_requests_length | see the amount of all of your withdraw requests ever.');
-        console.log(' ');
         console.log('- /my_tap_withdraw_request | enter the withdraw request index to get the request information. The index starts at zero until length - 1: \'/my_tap_withdraw_request --index <index>\'');
     }
 
@@ -471,6 +454,16 @@ class HypertokensProtocol extends Protocol{
                     dta : dta
                 };
                 await this._transact(command, args);
+            } else if (input.startsWith("/redeem")) {
+                const args = this.parseArgs(input);
+                const buffer = b4a.from(args.voucher, 'base64');
+                const command = this.safeJsonParse(buffer.toString('utf-8'));
+                if((command.op === 'transfer' || command.op === 'tap-transfer' ) &&
+                    command.addr === this.peer.wallet.publicKey){
+                    await this._transact(command, args);
+                } else {
+                    console.log('Not a voucher');
+                }
             } else if (input.startsWith("/hyperwarp")) {
                 const args = this.parseArgs(input);
                 if(args.ticker === undefined) throw new Error('Please specify a ticker');
