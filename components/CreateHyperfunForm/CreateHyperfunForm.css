@@ -1,0 +1,11 @@
+.hf-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:1000}
+.hf-modal-card{background:var(--bg-primary);color:var(--text-primary);padding:2rem;border-radius:12px;width:26rem;max-width:100%;box-shadow:0 8px 40px rgba(0,0,0,.3)}
+form label{display:flex;flex-direction:column;gap:.25rem;margin-bottom:1rem}
+input{padding:.5rem .75rem;border:1px solid #444;border-radius:6px;background:#1e1e1e;color:inherit}
+input.error{border-color:#e63946}.errtxt{color:#e63946;font-size:.75rem}
+.hf-accordion{background:none;border:none;color:#4ea8de;cursor:pointer;margin-bottom:1rem;padding:0}
+.hf-advanced{display:grid;gap:1rem;margin-bottom:1rem}
+.hf-actions{display:flex;justify-content:flex-end;gap:1rem}
+button.secondary{background:none;border:1px solid #444;color:inherit;padding:.5rem 1rem;border-radius:6px}
+button[type="submit"]{background:#4ea8de;border:none;color:#121212;padding:.5rem 1.25rem;border-radius:6px;cursor:pointer}
+button[disabled]{opacity:.5;cursor:not-allowed}

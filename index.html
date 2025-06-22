@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hyperfun Desktop</title>
+
+    <link rel="stylesheet" href="./styles/global.css" />
+    <!-- Modal‑specific tweaks -->
+    <link rel="stylesheet" href="./styles/ToastNotification.css" />
+    <link rel="stylesheet" href="./components/CreateHyperfunForm/CreateHyperfunForm.css" />
+
+    <style>
+        :root {
+            --bg-primary: #111111;
+            --text-primary: #ffffff;
+        }
+        #titlebar {
+            -webkit-app-region: drag;
+            height: 30px;
+            width: 100%;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--bg-primary);
+            z-index: 1000;
+        }
+        body {
+            margin: 0;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        #root {
+            display: flex;
+            flex-direction: column;
+            padding-top: 30px; /* leave space for titlebar */
+            height: calc(100vh - 30px);
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="titlebar"><pear-ctrl></pear-ctrl></div>
+<div id="root"></div>
+<script type="module" src="./index.js"></script>
+</body>
+</html>

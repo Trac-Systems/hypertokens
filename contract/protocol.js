@@ -251,9 +251,10 @@ class HypertokensProtocol extends Protocol{
         if(res !== false){
             const err = this.peer.protocol_instance.getError(res);
             if(null !== err){
-                console.log(err.message);
+                return err.message;
             }
         }
+        return res;
     }
 
     async customCommand(input) {
