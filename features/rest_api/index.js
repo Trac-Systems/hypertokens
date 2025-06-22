@@ -30,7 +30,7 @@ export class HypertokensRestApi extends Feature {
                 const ticker = pieces[2];
                 if(ticker !== undefined) {
                     const key = 'd/'+this.peer.protocol_instance.safeJsonStringify(ticker.trim().toLowerCase());
-                    const deployment = await this.get(key);
+                    const deployment = await this.getSigned(key);
                     if(null !== deployment){
                         _this.respond(res, deployment);
                     } else {
@@ -40,14 +40,14 @@ export class HypertokensRestApi extends Feature {
                     _this.respond(res, not_found, 404);
                 }
             } else if(pathname.startsWith('/graduated-length')){
-                let length = await this.get('grd');
+                let length = await this.getSigned('grd');
                 if(null === length) length = 0;
                 _this.respond(res, length);
             } else if(pathname.startsWith('/graduated/')){
                 const pieces = pathname.split('/', 3);
                 const index = parseInt(pieces[2]);
                 if(false === isNaN(index)) {
-                    let graduated_entry = await this.get('grdi/'+index);
+                    let graduated_entry = await this.getSigned('grdi/'+index);
                     if(null === graduated_entry) {
                         _this.respond(res, not_found, 404);
                     } else {
@@ -57,14 +57,14 @@ export class HypertokensRestApi extends Feature {
                     _this.respond(res, not_found, 404);
                 }
             } else if(pathname.startsWith('/transferred-length')){
-                let length = await this.get('tfl');
+                let length = await this.getSigned('tfl');
                 if(null === length) length = 0;
                 _this.respond(res, length);
             } else if(pathname.startsWith('/transferred/')){
                 const pieces = pathname.split('/', 3);
                 const index = parseInt(pieces[2]);
                 if(false === isNaN(index)) {
-                    let transferred_entry = await this.get('tfi/'+index);
+                    let transferred_entry = await this.getSigned('tfi/'+index);
                     if(null === transferred_entry) {
                         _this.respond(res, not_found, 404);
                     } else {
@@ -74,14 +74,14 @@ export class HypertokensRestApi extends Feature {
                     _this.respond(res, not_found, 404);
                 }
             } else if(pathname.startsWith('/tap-transferred-length')){
-                let length = await this.get('ttfl');
+                let length = await this.getSigned('ttfl');
                 if(null === length) length = 0;
                 _this.respond(res, length);
             } else if(pathname.startsWith('/tap-transferred/')){
                 const pieces = pathname.split('/', 3);
                 const index = parseInt(pieces[2]);
                 if(false === isNaN(index)) {
-                    let transferred_entry = await this.get('ttfi/'+index);
+                    let transferred_entry = await this.getSigned('ttfi/'+index);
                     if(null === transferred_entry) {
                         _this.respond(res, not_found, 404);
                     } else {
