@@ -266,6 +266,7 @@ class HypertokensProtocol extends Protocol{
                 if(args.decimals === undefined) throw new Error('Please specify decimals (0 to 18)');
                 let fun = null;
                 if(args.funprice !== undefined && args.funblocks !== undefined) {
+                    if(parseInt(args.decimals) !== 18) throw new Error('18 decimals required for Hyperfun deployments.');
                     fun = {
                         target_price : args.funprice,
                         blocks : args.funblocks
