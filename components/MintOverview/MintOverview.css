@@ -1,0 +1,61 @@
+.hf-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1rem 2rem;
+    background:var(--bg-secondary,#161616);
+    color:var(--text-primary);
+}
+.hf-logo{font-weight:700;font-size:1.25rem}
+.hf-balance{display:flex;align-items:center;gap:.5rem;font-weight:500}
+.hf-balance button{background:#4ea8de;border:none;padding:.25rem .6rem;border-radius:6px;color:#121212;cursor:pointer;font-size:.875rem}
+.hf-deploy-btn{background:#4ea8de;border:none;padding:.5rem 1rem;border-radius:8px;color:#121212;cursor:pointer;font-weight:600}
+
+/* ────────── Layout ────────── */
+.hf-content{padding:1rem 2rem 2rem 2rem;overflow-y:auto}
+
+/* ────────── Mint lanes ────────── */
+.mint-lane{margin-bottom:2rem}
+.mint-lane h2{margin:0 0 .5rem .25rem;font-size:1.25rem;font-weight:600}
+.mint-scroll{
+    display:flex;
+    flex-wrap:wrap;          /* allow wrapping to next line */
+    gap:1rem 1rem;
+    overflow-x:hidden;       /* no horizontal scroll needed */
+    padding-bottom:1rem;
+}
+.mint-scroll::-webkit-scrollbar{height:.5rem}
+.mint-scroll::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+
+/* ────────── Mint card ────────── */
+.mint-card{
+    flex:0 0 220px;
+    width:220px;
+    min-width:220px;
+    scroll-snap-align:start;
+    background:var(--bg-card,#0c0809);
+    border-radius:12px;
+    padding:1rem;
+    color:var(--text-primary);
+    box-shadow:0 2px 8px rgba(0,0,0,.4);
+    display:flex;
+    flex-direction:column;
+    gap:.25rem;
+}
+.mint-card h3{margin:0 0 .5rem 0;font-size:1.1rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.mint-btn{margin-top:auto;background:#4ea8de;border:none;padding:.5rem 0;border-radius:6px;color:#121212;cursor:pointer;font-weight:600}
+.mint-btn:hover{background:#64b4ea}
+
+/* ────────── Generic secondary button (modal close / cancel) ────────── */
+button.secondary{
+    background:none;
+    border:1px solid var(--border-color,#444);
+    color:var(--text-primary);
+    padding:.5rem 1rem;
+    border-radius:6px;
+    cursor:pointer;
+}
+button.secondary:hover{background:rgba(255,255,255,.05)}
+
+/* ensure modal card text spacing */
+.hf-modal-card h2{margin-top:0}
