@@ -9,9 +9,7 @@ export default function MintLane({ title, items, onMint }) {
         <section className="mint-lane">
             <h2>${title}</h2>
             <div className="mint-scroll">
-                ${items.map(
-                        (i) => html`<${MintCard} key=${i.id} mint=${i} onMint=${onMint} />`
-                )}
+                ${items.map(i => html`<${MintCard} key=${i.id} mint=${i} onMint=${onMint} />`)}
             </div>
         </section>
     `;

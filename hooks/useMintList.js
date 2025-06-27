@@ -2,73 +2,52 @@
 // File: hooks/useMintList.js
 // ===============================
 import { useState, useEffect } from "react";
+import { usePeer } from "../contexts/peerContext.js";
 
 /**
- * Polls an endpoint every `interval` ms and returns the current list of mints.
- * Replace `fetchMints()` implementation with real trac‑kv lookup.
+ * Fetch one page of mints at a time, with total page count.
  */
-export function useMintList({ interval = 10_000 } = {}) {
+export function useMintList({ page, pageSize = 3, poll = 10000 }) {
+    const peer = usePeer();
     const [mints, setMints] = useState([]);
-    const [error, setError] = useState(null);
+    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (!peer) return;
         let mounted = true;
-        const fetchMints = async () => {
+        const fetchPage = async () => {
+            setLoading(true);
             try {
-                // TODO: swap for real hyperswarm/trac read
-                // Mock response
-                const demo = [
-                    {
-                        id: "m1",
-                        ticker: "boobs",
-                        supply: 100_000_000,
-                        completed: 10_000_000,
-                        targetPrice: "0.03",
-                        currentPrice: "0.0021",
-                        deadlineBlock: 930001
-                    },
-                    {
-                        id: "m1",
-                        ticker: "boobs",
-                        supply: 100_000_000,
-                        completed: 10_000_000,
-                        targetPrice: "0.03",
-                        currentPrice: "0.0021",
-                        deadlineBlock: 930001
-                    },
-                    {
-                        id: "m1",
-                        ticker: "boobs",
-                        supply: 100_000_000,
-                        completed: 10_000_000,
-                        targetPrice: "0.03",
-                        currentPrice: "0.0021",
-                        deadlineBlock: 930001
-                    },
-                    {
-                        id: "m1",
-                        ticker: "boobs",
-                        supply: 100_000_000,
-                        completed: 10_000_000,
-                        targetPrice: "0.03",
-                        currentPrice: "0.0021",
-                        deadlineBlock: 930001
-                    },
-                    {
-                        id: "m1",
-                        ticker: "boobs",
-                        supply: 100_000_000,
-                        completed: 10_000_000,
-                        targetPrice: "0.03",
-                        currentPrice: "0.0021",
-                        deadlineBlock: 930001
-                    }
-                ];
+                const total = await peer.protocol_instance.api.getDeploymentLength();
+                const pages = Math.max(1, Math.ceil(total / pageSize));
+                const startIdx = total - 1 - page * pageSize;
+                const stopIdx = Math.max(startIdx - pageSize + 1, 0);
+                const tapDep = await peer.protocol_instance.getSigned(
+                    peer.protocol_instance.getDeploymentKey(peer.contract_instance.tap_token)
+                );
+                const list = [];
+                for (let i = startIdx; i >= stopIdx; i--) {
+                    const dep = await peer.protocol_instance.api.getDeploymentByIndex(i);
+                    if (!dep) continue;
+                    list.push({
+                        id: `${dep.tick}-${i}`,
+                        ticker: dep.tick,
+                        supply: await peer.protocol_instance.fromBigIntString(dep.supply, dep.dec),
+                        completed: await peer.protocol_instance.fromBigIntString(dep.com, dep.dec),
+                        targetPrice: await peer.protocol_instance.fromBigIntString(dep.fun.target_price, tapDep.dec),
+                        currentPrice: await peer.protocol_instance.fromBigIntString(dep.fun.curr_price, tapDep.dec),
+                        deadlineBlock: dep.fun.last_block,
+                        startBlock: dep.fun.start_block ?? 0,
+                        deployment: dep,
+                    });
+                }
                 if (mounted) {
-                    setMints(demo);
-                    setError(null);
+                    setMints(list);
+                    setTotalPages(pages);
                     setLoading(false);
+                    setError(null);
                 }
             } catch (err) {
                 if (mounted) {
@@ -77,14 +56,10 @@ export function useMintList({ interval = 10_000 } = {}) {
                 }
             }
         };
+        fetchPage();
+        const id = setInterval(fetchPage, poll);
+        return () => { mounted = false; clearInterval(id); };
+    }, [peer, page, pageSize, poll]);
 
-        fetchMints();
-        const id = setInterval(fetchMints, interval);
-        return () => {
-            mounted = false;
-            clearInterval(id);
-        };
-    }, [interval]);
-
-    return { mints, loading, error };
+    return { mints, loading, error, totalPages };
 }

@@ -248,17 +248,24 @@ class HypertokensContract extends Contract {
         _deployment.signed = this.value.signed !== undefined && true === this.value.signed;
         _deployment.addr = this.address;
         _deployment.dta = this.value.dta !== undefined ? this.value.dta : null;
-        const length_key = 'dl/'+this.protocol.safeJsonStringify(tick);
+        const length_key = 'dl';
+        const hf_length_key = 'hdl';
         let length = await this.get(length_key);
         if(null === length){
             length = 0;
+        }
+        let hf_length = await this.get(hf_length_key);
+        if(null === hf_length){
+            hf_length = 0;
         }
         if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
         if(null !== _deployment.fun){
             await this.put('strtblck/'+this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase()), current_block);
         }
         await this.put('dli/'+length, key);
+        await this.put('hdli/'+hf_length, key);
         await this.put(length_key, length + 1);
+        await this.put(hf_length_key, hf_length + 1);
         await this.put(key, _deployment);
         if(true === this.protocol.peer.options.enable_logs){
             console.log('Deployed ticker', tick,
@@ -558,7 +565,8 @@ class HypertokensContract extends Contract {
         const blocks = parseInt(deployment.fun.blocks);
         const start_block = await this.get('strtblck/'+tick);
         if(null === start_block) return new Error('Invalid start block');
-        if(current_block - start_block > blocks && deployment.liq === '0') {
+        console.log(current_block, start_block, blocks, deployment.fun.liq)
+        if(current_block - start_block > blocks && deployment.fun.liq === '0') {
             const total_spent_key = 'spnt/'+this.address+'/'+tick;
             let total_spent = await this.get(total_spent_key);
             if(null === total_spent){
@@ -582,8 +590,9 @@ class HypertokensContract extends Contract {
             if(true === this.protocol.peer.options.enable_logs){
                 console.log('Refun', this.address, tap_deployment.tick, this.protocol.fromBigIntString(total_spent.toString(), tap_deployment.dec));
             }
+        } else {
+            return new Error('No refun');
         }
-        return new Error('No refun');
     }
 
     async transfer(){

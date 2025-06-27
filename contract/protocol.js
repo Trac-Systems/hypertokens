@@ -20,6 +20,55 @@ class HypertokensProtocol extends Protocol{
 
     async extendApi(){
         const _this = this;
+        this.api.getDeploymentLength = async function(hyperfun = true, signed = true) {
+            try {
+                const length_key = (hyperfun ? 'h' : '') + 'dl';
+                let length = null;
+                if (true === signed) length = await _this.getSigned(length_key);
+                if (false === signed) length = await _this.get(length_key);
+                if (length !== null) {
+                    return length;
+                }
+            } catch (e) { }
+            return 0;
+        };
+        this.api.getDeploymentByIndex = async function(index, signed = true, hyperfun = true) {
+            try {
+                const key = (hyperfun ? 'h' : '') + 'dli/'+index;
+
+                let deployment = null;
+                if (true === signed) deployment = await _this.getSigned(key);
+                if (false === signed) deployment = await _this.get(key);
+                if (deployment !== null) {
+                   return await _this.api.getDeployment(deployment, true, signed);
+                }
+            } catch (e) { }
+            return null;
+        };
+        /**
+         *
+         * @param tick
+         * @param is_stringified
+         * @param signed
+         * @returns {Promise<number|null>}
+         */
+        this.api.getDeployment = async function(tick, is_stringified = false, signed = true) {
+            try {
+                let key;
+                if(is_stringified){
+                    key = tick;
+                } else {
+                    key = 'd/'+_this.safeJsonStringify(tick);
+                }
+                let deployment = null;
+                if (true === signed) deployment = await _this.getSigned(key);
+                if (false === signed) deployment = await _this.get(key);
+                if (deployment !== null) {
+                    return deployment;
+                }
+            } catch (e) { console.log(e) }
+            return null;
+        };
         /**
          *
          * @param address

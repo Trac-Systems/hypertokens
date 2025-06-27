@@ -1,0 +1,107 @@
+/* =============================== */
+/* File: components/TapTransfer/TapTransferModal.css */
+/* =============================== */
+
+/* Modal card: unified width & padding */
+.hf-modal-card {
+    max-width: 32rem;
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+}
+
+/* Heading */
+.hf-modal-card h2 {
+    margin-bottom: 1rem;
+}
+
+/* Body wrapper */
+.modal-body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Inputs */
+.hf-modal-input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+/* Primary modal button */
+.hf-modal-btn.primary {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.hf-modal-btn.primary:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Error text */
+.error-text {
+    color: var(--error-color);
+    margin-bottom: 1rem;
+}
+
+/* Divider */
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 1.5rem 0;
+}
+
+/* Withdraw list heading */
+h3 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* Scrollable list of withdraw buttons */
+.withdraw-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 12rem;
+    overflow-y: auto;
+}
+
+/* Each withdraw-item full width */
+.withdraw-item {
+    text-align: left;
+}
+
+/* Modal actions row */
+.modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* Secondary (close) button */
+.secondary.hf-modal-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.secondary.hf-modal-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
