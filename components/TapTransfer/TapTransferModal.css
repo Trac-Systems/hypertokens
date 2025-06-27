@@ -42,7 +42,6 @@
     border: none;
     border-radius: 6px;
     color: var(--text-primary);
-    font-weight: 600;
     cursor: pointer;
 }
 

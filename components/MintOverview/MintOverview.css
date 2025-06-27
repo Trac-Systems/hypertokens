@@ -46,7 +46,6 @@
     border-radius: 8px;
     color: #121212;
     cursor: pointer;
-    font-weight: 600;
 }
 .hf-deploy-btn:hover,
 .page-btn:hover {
@@ -60,7 +59,6 @@
 .mint-lane h2 {
     margin: 0 0 .5rem .25rem;
     font-size: 1.25rem;
-    font-weight: 600;
 }
 
 /* ── Card Row ── */
@@ -101,7 +99,6 @@
     border-radius: 6px;
     color: #121212;
     cursor: pointer;
-    font-weight: 600;
 }
 .mint-btn:hover {
     background: #64b4ea;
@@ -193,7 +190,6 @@ button.secondary:hover {
 /* ── Status Notes ── */
 .status-note {
     margin-bottom: 1rem;
-    font-weight: 600;
 }
 .status-note.failed {
     color: var(--error-color);

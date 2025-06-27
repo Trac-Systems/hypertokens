@@ -23,8 +23,8 @@ export default function MintCard({ mint, onMint }) {
     }, [peer]);
 
     // percentage using BigInt math
-    const totalBI = BigInt(mint.supply ?? "0");
-    const doneBI  = BigInt(mint.completed ?? "0");
+    const totalBI = BigInt(mint.deployment.supply ?? "0");
+    const doneBI  = BigInt(mint.deployment.com ?? "0");
     const pctNum  = totalBI === 0n
         ? 0
         : Number((doneBI * 10000n) / totalBI) / 100;

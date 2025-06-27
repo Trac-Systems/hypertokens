@@ -322,10 +322,7 @@ class HypertokensContract extends Contract {
             if(null === token_exists){
                 let tokens_length = await this.get('tl/'+this.address);
                 if(null === tokens_length){
-                    tokens_length = 0n;
-                } else {
-                    tokens_length = this.protocol.safeBigInt(tokens_length);
-                    if(null === tokens_length) return new Error('Invalid tokens length');
+                    tokens_length = 0;
                 }
                 await this.put('ti/'+this.address+'/'+tokens_length, this.value.tick.trim().toLowerCase());
                 await this.put('tl/'+this.address, tokens_length + 1);
@@ -493,10 +490,7 @@ class HypertokensContract extends Contract {
             if(null === token_exists){
                 let tokens_length = await this.get('tl/'+this.address);
                 if(null === tokens_length){
-                    tokens_length = 0n;
-                } else {
-                    tokens_length = this.protocol.safeBigInt(tokens_length);
-                    if(null === tokens_length) return new Error('Invalid tokens length');
+                    tokens_length = 0;
                 }
                 await this.put('ti/'+this.address+'/'+tokens_length, this.value.tick.trim().toLowerCase());
                 await this.put('tl/'+this.address, tokens_length + 1);

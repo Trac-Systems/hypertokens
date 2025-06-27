@@ -131,6 +131,7 @@ export default function MintModal({ mint: initial, onClose }) {
 
             notify(failed ? "Refund successful" : "Mint successful", "success");
         } catch (e) {
+            console.log(e)
             notify(e.message || String(e), "error");
         } finally {
             setProc(false);

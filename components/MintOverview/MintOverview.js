@@ -15,7 +15,7 @@ import TapTransferModal from "../TapTransfer/TapTransferModal.js";
 export default function MintOverview() {
     const peer = usePeer();
     const [balanceTAP, setBalanceTAP] = useState("0");
-    const pageSize = 3;
+    const pageSize = 20;
     const [page, setPage] = useState(0);
     const [selected, setSelected] = useState(null);
     const [showDeploy, setShowDeploy] = useState(false);

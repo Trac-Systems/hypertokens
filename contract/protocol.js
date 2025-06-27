@@ -51,10 +51,12 @@ class HypertokensProtocol extends Protocol{
                 let balance = null;
                 if(true === signed) balance = await _this.getSigned(key);
                 if(false === signed) balance = await _this.get(key);
+                console.log('balance', key, balance)
                 if (balance !== null) {
                     let deployment = null;
                     if(true === signed) deployment = await _this.getSigned(dep_key);
                     if(false === signed) deployment = await _this.get(dep_key);
+                    console.log('deployment', dep_key, deployment)
                     if (deployment !== null) {
                         return _this.fromBigIntString(balance, deployment.dec);
                     }
