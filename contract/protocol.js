@@ -20,6 +20,48 @@ class HypertokensProtocol extends Protocol{
 
     async extendApi(){
         const _this = this;
+        this.api.getUserTokensLength = async function(address, signed = true) {
+            try {
+                const length_key = 'tl/'+address;
+                let length = null;
+                if (true === signed) length = await _this.getSigned(length_key);
+                if (false === signed) length = await _this.get(length_key);
+                if (length !== null) {
+                    return length;
+                }
+            } catch (e) { }
+            return 0;
+        };
+        this.api.getUserToken = async function(address, index, signed = true) {
+            try {
+                const key = 'ti/'+address+'/'+index;
+                let token = null;
+                if (true === signed) token = await _this.getSigned(key);
+                if (false === signed) token = await _this.get(key);
+                if (token !== null) {
+                    return await token;
+                }
+            } catch (e) { }
+            return null;
+        };
+        this.api.getBalance = async function(address, ticker, signed = true){
+            try {
+                const key = 'b/'+address+'/'+_this.safeJsonStringify(ticker);
+                const dep_key = 'd/'+_this.safeJsonStringify(ticker);
+                let balance = null;
+                if(true === signed) balance = await _this.getSigned(key);
+                if(false === signed) balance = await _this.get(key);
+                if (balance !== null) {
+                    let deployment = null;
+                    if(true === signed) deployment = await _this.getSigned(dep_key);
+                    if(false === signed) deployment = await _this.get(dep_key);
+                    if (deployment !== null) {
+                        return _this.fromBigIntString(balance, deployment.dec);
+                    }
+                }
+            } catch (e) { }
+            return '0';
+        };
         this.api.getDeploymentLength = async function(hyperfun = true, signed = true) {
             try {
                 const length_key = (hyperfun ? 'h' : '') + 'dl';

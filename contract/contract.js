@@ -317,6 +317,21 @@ class HypertokensContract extends Contract {
             if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
             await this.put('d/'+tick, deployment);
             await this.put('b/'+this.address+'/'+tick, balance.toString());
+
+            const token_exists = await this.get('te/'+this.address+'/'+tick);
+            if(null === token_exists){
+                let tokens_length = await this.get('tl/'+this.address);
+                if(null === tokens_length){
+                    tokens_length = 0n;
+                } else {
+                    tokens_length = this.protocol.safeBigInt(tokens_length);
+                    if(null === tokens_length) return new Error('Invalid tokens length');
+                }
+                await this.put('ti/'+this.address+'/'+tokens_length, this.value.tick.trim().toLowerCase());
+                await this.put('tl/'+this.address, tokens_length + 1);
+                await this.put('te/'+this.address+'/'+tick, true);
+            }
+
             if(true === this.protocol.peer.options.enable_logs){
                 console.log('Minting ticker', this.value.tick.trim().toLowerCase(),
                     ',',
@@ -473,6 +488,21 @@ class HypertokensContract extends Contract {
             await this.put(liq_key, liquidity.toString());
             await this.put('d/'+tick, deployment);
             await this.put('b/'+this.address+'/'+tick, balance.toString());
+
+            const token_exists = await this.get('te/'+this.address+'/'+tick);
+            if(null === token_exists){
+                let tokens_length = await this.get('tl/'+this.address);
+                if(null === tokens_length){
+                    tokens_length = 0n;
+                } else {
+                    tokens_length = this.protocol.safeBigInt(tokens_length);
+                    if(null === tokens_length) return new Error('Invalid tokens length');
+                }
+                await this.put('ti/'+this.address+'/'+tokens_length, this.value.tick.trim().toLowerCase());
+                await this.put('tl/'+this.address, tokens_length + 1);
+                await this.put('te/'+this.address+'/'+tick, true);
+            }
+
             if(true === this.protocol.peer.options.enable_logs){
                 console.log('Minting ticker', this.value.tick.trim().toLowerCase(),
                     ',',
