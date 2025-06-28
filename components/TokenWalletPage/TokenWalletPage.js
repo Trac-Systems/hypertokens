@@ -164,11 +164,11 @@ export default function TokenWalletPage({ onBack }) {
                                         <span className="token-balance">${fnumHuman(humanBal)}</span>
                                         <div className="token-actions">
                                             ${isFailed && html`
-                                                <button onClick=${() => doOp({ op: "refun", tick })}>
+                                                <button class="hf-modal-btn secondary" onClick=${() => doOp({ op: "refun", tick })}>
                                                     Refun
                                                 </button>`}
                                             ${isGrad && html`
-                                                <button onClick=${() =>
+                                                <button class="hf-modal-btn secondary" onClick=${() =>
                                                         setModal({
                                                             mode: "hyperwarp",
                                                             tick, humanBal, rawBal, dec
@@ -176,7 +176,7 @@ export default function TokenWalletPage({ onBack }) {
                                                 }>
                                                     Send to Hypermall
                                                 </button>`}
-                                            <button onClick=${() =>
+                                            <button class="hf-modal-btn secondary" onClick=${() =>
                                                     setModal({
                                                         mode: "transfer",
                                                         tick, humanBal, rawBal, dec

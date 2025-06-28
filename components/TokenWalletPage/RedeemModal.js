@@ -17,7 +17,7 @@ export default function RedeemModal({ onConfirm, onClose }) {
                     <h2>Redeem Voucher</h2>
                 </header>
                 <label className="rm-label">
-                    Paste your voucher (e.g. from Hypermall)
+                    Paste your voucher to receive Hypertokens or TAP (e.g. from Hypermall)
                     <textarea
                             className="hf-modal-input rm-textarea"
                             rows="4"

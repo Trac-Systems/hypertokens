@@ -29,18 +29,7 @@
     margin-right: auto;
 }
 
-.token-actions button {
-    background: var(--accent-primary);
-    border: none;
-    color: #111;
-    padding: .35rem .75rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: .85rem;
-}
 
-.token-actions button:not(:last-child) { margin-right: .5rem; }
-.token-actions button:hover { background: var(--accent-secondary); }
 
 .back-btn { margin-bottom: .5rem; }
 

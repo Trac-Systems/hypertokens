@@ -266,7 +266,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                             ${txList.map(({ tx, amount, link }) => html`
                 <button
                   key=${tx}
-                  className="hf-modal-btn primary withdraw-item"
+                  className="hf-modal-btn secondary withdraw-item"
                   onClick=${() => link && window.open(link, "_blank")}
                 >
                   ${tx.slice(0,6)}…${tx.slice(-6)} — ${fnumHuman(amount)} TAP
