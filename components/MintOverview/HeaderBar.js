@@ -15,14 +15,7 @@ export default function HeaderBar({
                                   }) {
     return html`
         <header className="hf-header">
-            <div className="hf-logo">
-                <img
-                        src="/images/logo-bigH-v1.png"
-                        alt="Hyperfun Logo"
-                        className="logo-image"
-                />
-            </div>
-
+            
             <div className="tap-controls">
                 <span className="tap-balance">${balanceTAP} TAP</span>
                 <button className="secondary" onClick=${onDeposit}>Deposit</button>
