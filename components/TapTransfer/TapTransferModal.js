@@ -237,7 +237,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                   onClick=${handleFetchInfo}
                   disabled=${loading || !input.trim()}
                 >
-                  ${loading ? "Loading…" : "Get Deposit Link"}
+                    Get Deposit Link
                 </button>
                                     
                 <hr/>
@@ -257,7 +257,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                                 onClick=${handleRequestWithdraw}
                                 disabled=${loading || !input.trim() || !address.trim()}
                         >
-                            ${loading ? "Requesting…" : "Request Withdraw"}
+                            Request Withdraw
                         </button>
                         <hr />
                         <label>Once granted, click on the withdraw requests below to receive your TAP.</label>
@@ -282,7 +282,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                                 onClick=${handleSendTransfer}
                                 disabled=${loading || !input.trim() || (!warp && !address.trim())}
                         >
-                            ${loading ? "Sending…" : "Send Transfer"}
+                            Send Transfer
                         </button>
                     `}
                 </div>

@@ -29,8 +29,8 @@ export class App extends ReadyResource {
         await this.peer.ready();
         console.log('Peer is ready.');
         const admin = await this.peer.base.view.get('admin');
-        if(null !== admin && this.peer.wallet.publicKey === admin.value && this.peer.base.writable) {
-            for(let i = 0; i < this.features.length; i++){
+        for(let i = 0; i < this.features.length; i++){
+            if(this.features[i].noadmin === true || (null !== admin && this.peer.wallet.publicKey === admin.value && this.peer.base.writable)) {
                 const name = this.features[i].name;
                 const _class = this.features[i].class;
                 const opts = this.features[i].opts;

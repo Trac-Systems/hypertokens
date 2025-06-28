@@ -72,11 +72,12 @@ export const app = new App(msb_opts, peer_opts, [
     {
         name : 'migration',
         class : Migration
-    },
-    /*{
+    }/*,
+    {
         name : 'restapi',
         class : HypertokensRestApi,
-        opts : rest_opts
+        opts : rest_opts,
+        noadmin : true
     }*/
 ]);
 await app.start();
