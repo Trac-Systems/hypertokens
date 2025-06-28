@@ -158,7 +158,7 @@ export default function MintModal({ mint: initial, onClose }) {
                 </div>
 
                 ${failed &&  html`<p className="status-note failed">Graduation failed — you may Refun.</p>`}
-                ${graduated && !failed && html`<p className="status-note graduated">✅ Graduated!</p>`}
+                ${graduated && !failed && html`<p className="status-note graduated">✅ Graduated! The token is being listed on Hypermall with TAP as liquidity.</p>`}
 
                 <table className="mint-details-table"><tbody>
                 <tr><th>Supply</th>         <td>${fnum(supply)}</td></tr>

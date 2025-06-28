@@ -1,7 +1,6 @@
 // ===============================
 // File: components/MintOverview/HeaderBar.js
 // ===============================
-
 import { html } from "htm/react";
 
 export default function HeaderBar({
@@ -15,43 +14,56 @@ export default function HeaderBar({
                                       onSearch
                                   }) {
     return html`
-    <header className="hf-header">
-      <div className="hf-logo">
-        <img src="/images/logo-bigH-v1.png" alt="Hyperfun Logo" className="logo-image" />
-      </div>
+        <header className="hf-header">
+            <div className="hf-logo">
+                <img
+                        src="/images/logo-bigH-v1.png"
+                        alt="Hyperfun Logo"
+                        className="logo-image"
+                />
+            </div>
 
-      <div className="hf-balance">
-        ${balanceTAP} TAP
-        <button onClick=${onDeposit}>Deposit</button>
-        <button onClick=${onWithdraw}>Withdraw</button>
-        <button onClick=${onTransfer}>Transfer</button>
-      </div>
+            <div className="tap-controls">
+                <span className="tap-balance">${balanceTAP} TAP</span>
+                <button className="secondary" onClick=${onDeposit}>Deposit</button>
+                <button className="secondary" onClick=${onWithdraw}>Withdraw</button>
+                <button className="secondary" onClick=${onTransfer}>Transfer</button>
+            </div>
 
-      <!-- search + mint overview nav -->
-      <div className="hf-search" style=${{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-        <input
-          id="hf-search-input"
-          className="hf-modal-input"
-          type="text"
-          placeholder="Search token…"
-          value=${searchTerm}
-          onInput=${onSearchTermChange}
-          style=${{ width: "8rem" }}
-          onKeyDown=${e => {
-            if (e.key &&  e.key.toLowerCase() === 'enter') {
-                    onSearch();
-                }
-            }}
-        />
-        <button className="secondary" onClick=${onSearch}>Search</button>
-        <button
-          className="hf-deploy-btn"
-          onClick=${() => window.dispatchEvent(new CustomEvent("navigate", { detail: "TokenWalletPage" }))}
-        >
-          Your Hypertokens
-        </button>
-        <button className="hf-deploy-btn" onClick=${onDeploy}>Deploy</button>
-      </div>
-    </header>
-  `;
+            <div
+                    className="hf-search"
+                    style=${{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+                <input
+                        id="hf-search-input"
+                        className="hf-modal-input"
+                        type="text"
+                        placeholder="Search token…"
+                        value=${searchTerm}
+                        onInput=${onSearchTermChange}
+                        style=${{ width: "8rem" }}
+                        onKeyDown=${e => {
+                            if (e.key && e.key.toLowerCase() === "enter") {
+                                onSearch();
+                            }
+                        }}
+                />
+                <button className="secondary" onClick=${onSearch}>Search</button>
+
+                <button
+                        className="hf-deploy-btn"
+                        onClick=${() =>
+                                window.dispatchEvent(
+                                        new CustomEvent("navigate", { detail: "TokenWalletPage" })
+                                )}
+                >
+                    Your Hypertokens
+                </button>
+
+                <button className="hf-deploy-btn" onClick=${onDeploy}>
+                    Deploy
+                </button>
+            </div>
+        </header>
+    `;
 }

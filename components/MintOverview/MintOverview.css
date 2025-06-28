@@ -310,4 +310,22 @@ button.secondary:hover {
     margin-top: 10px;
 }
 
+/* ========== Tap‐controls box ========== */
+.tap-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin: 0 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.tap-balance {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+
 
