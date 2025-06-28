@@ -2,7 +2,7 @@
 // File: components/TokenWallet/TokenWalletPage.js
 // ===============================
 import { html } from "htm/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePeer } from "../../contexts/peerContext.js";
 import { useNotification } from "../../contexts/useNotification.js";
 import TokenTransferModal from "./TokenTransferModal.js";
@@ -14,13 +14,14 @@ export default function TokenWalletPage({ onBack }) {
     const { notify } = useNotification();
 
     const [tokens, setTokens] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [currentBlock, setCurrentBlock] = useState(0);
     const [modal, setModal] = useState(null);       // { mode, tick, humanBal, rawBal, dec }
     const [redeemOpen, setRedeemOpen] = useState(false);
+    const firstLoad = useRef(true);
 
     // format a human decimal string with thousands‐separators
-    const fnumHuman = human => {
+    const fnumHuman = (human) => {
         const [i, d] = String(human).split(".");
         const withCommas = i.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return d != null ? `${withCommas}.${d}` : withCommas;
@@ -36,25 +37,30 @@ export default function TokenWalletPage({ onBack }) {
         return combined.replace(/^0+(?=\d)/, "") || "0";
     };
 
-    // poll current block
+    // poll current block every 5s
     useEffect(() => {
         if (!peer) return;
         let alive = true;
-        async function tick() {
+        const tick = async () => {
             const blk = await peer.protocol_instance.get("currentBlock");
             if (alive) setCurrentBlock(Number(blk));
-        }
+        };
         tick();
         const id = setInterval(tick, 5000);
-        return () => { alive = false; clearInterval(id); };
+        return () => {
+            alive = false;
+            clearInterval(id);
+        };
     }, [peer]);
 
-    // load + refresh token list every 5s
+    // load + refresh token list every 5s, but only show spinner on first load
     useEffect(() => {
         if (!peer) return;
         let alive = true;
-        async function load() {
-            setLoading(true);
+
+        const load = async () => {
+            if (firstLoad.current) setLoading(true);
+
             const list = [];
             const length = await peer.protocol_instance.api.getUserTokensLength(
                 peer.wallet.publicKey
@@ -78,12 +84,21 @@ export default function TokenWalletPage({ onBack }) {
                 const rawBal = toRawAmount(humanBal, dec);
                 list.push({ tick, humanBal, rawBal, dec, deployment: dep });
             }
+
             if (alive) setTokens(list);
-            setLoading(false);
-        }
+
+            if (firstLoad.current) {
+                setLoading(false);
+                firstLoad.current = false;
+            }
+        };
+
         load();
         const id = setInterval(load, 5000);
-        return () => { alive = false; clearInterval(id); };
+        return () => {
+            alive = false;
+            clearInterval(id);
+        };
     }, [peer]);
 
     // low-level tx + notification
@@ -100,7 +115,7 @@ export default function TokenWalletPage({ onBack }) {
     }
 
     // redeem handler
-    const handleRedeem = voucherBase64 => {
+    const handleRedeem = (voucherBase64) => {
         try {
             const buf = b4a.from(voucherBase64, "base64");
             const cmd = JSON.parse(buf.toString("utf8"));
@@ -134,7 +149,8 @@ export default function TokenWalletPage({ onBack }) {
             </div>
 
             <h2>Your Tokens</h2>
-            ${loading
+
+            ${loading && tokens.length === 0
                     ? html`<p>Loading…</p>`
                     : tokens.length === 0
                             ? html`<p>You have no tokens.</p>`
@@ -152,21 +168,26 @@ export default function TokenWalletPage({ onBack }) {
                                                     Refun
                                                 </button>`}
                                             ${isGrad && html`
-                                                <button onClick=${() => setModal({
-                                                    mode: "hyperwarp",
-                                                    tick, humanBal, rawBal, dec
-                                                })}>
+                                                <button onClick=${() =>
+                                                        setModal({
+                                                            mode: "hyperwarp",
+                                                            tick, humanBal, rawBal, dec
+                                                        })
+                                                }>
                                                     Send to Hypermall
                                                 </button>`}
-                                            <button onClick=${() => setModal({
-                                                mode: "transfer",
-                                                tick, humanBal, rawBal, dec
-                                            })}>
+                                            <button onClick=${() =>
+                                                    setModal({
+                                                        mode: "transfer",
+                                                        tick, humanBal, rawBal, dec
+                                                    })
+                                            }>
                                                 Transfer
                                             </button>
                                         </div>
                                     </div>`;
                             })}
+
             ${modal && html`
                 <${TokenTransferModal}
                         mode=${modal.mode}
@@ -174,16 +195,17 @@ export default function TokenWalletPage({ onBack }) {
                         maxRaw=${modal.rawBal}
                         decimals=${modal.dec}
                         onConfirm=${({ amt, to }) => {
-                            const base = { op:"transfer", tick:modal.tick, amt };
+                            const base = { op: "transfer", tick: modal.tick, amt };
                             const cmd = modal.mode === "transfer"
-                                    ? { ...base, addr:to.trim(), from:null, sig:null, nonce:null, dta:null }
-                                    : { ...base, addr:peer.contract_instance.graduation_authority, from:null, sig:null, nonce:null, dta:null };
+                                    ? { ...base, addr: to.trim(), from: null, sig: null, nonce: null, dta: null }
+                                    : { ...base, addr: peer.contract_instance.graduation_authority, from: null, sig: null, nonce: null, dta: null };
                             doOp(cmd);
                             setModal(null);
                         }}
                         onClose=${() => setModal(null)}
                 />
             `}
+
             ${redeemOpen && html`
                 <${RedeemModal}
                         onConfirm=${handleRedeem}

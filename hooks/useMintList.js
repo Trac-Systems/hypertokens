@@ -1,24 +1,22 @@
-// ===============================
 // File: hooks/useMintList.js
-// ===============================
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePeer } from "../contexts/peerContext.js";
 
-/**
- * Fetch one page of mints at a time, with total page count.
- */
 export function useMintList({ page, pageSize = 3, poll = 10000 }) {
     const peer = usePeer();
     const [mints, setMints] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const firstLoad = useRef(true);
 
     useEffect(() => {
         if (!peer) return;
         let mounted = true;
+
         const fetchPage = async () => {
-            setLoading(true);
+            // only show spinner on the very first load
+            if (firstLoad.current) setLoading(true);
+
             try {
                 const total = await peer.protocol_instance.api.getDeploymentLength();
                 const pages = Math.max(1, Math.ceil(total / pageSize));
@@ -27,6 +25,7 @@ export function useMintList({ page, pageSize = 3, poll = 10000 }) {
                 const tapDep = await peer.protocol_instance.getSigned(
                     peer.protocol_instance.getDeploymentKey(peer.contract_instance.tap_token)
                 );
+
                 const list = [];
                 for (let i = startIdx; i >= stopIdx; i--) {
                     const dep = await peer.protocol_instance.api.getDeploymentByIndex(i);
@@ -43,23 +42,28 @@ export function useMintList({ page, pageSize = 3, poll = 10000 }) {
                         deployment: dep,
                     });
                 }
-                if (mounted) {
-                    setMints(list);
-                    setTotalPages(pages);
-                    setLoading(false);
-                    setError(null);
-                }
+
+                if (!mounted) return;
+                setMints(list);
+                setTotalPages(pages);
             } catch (err) {
-                if (mounted) {
-                    setError(err);
+                console.error(err);
+            } finally {
+                if (firstLoad.current) {
                     setLoading(false);
+                    firstLoad.current = false;
                 }
             }
         };
+
+        // initial + polling
         fetchPage();
         const id = setInterval(fetchPage, poll);
-        return () => { mounted = false; clearInterval(id); };
+        return () => {
+            mounted = false;
+            clearInterval(id);
+        };
     }, [peer, page, pageSize, poll]);
 
-    return { mints, loading, error, totalPages };
+    return { mints, loading, totalPages };
 }
