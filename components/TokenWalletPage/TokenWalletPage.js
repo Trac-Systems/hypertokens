@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { usePeer } from "../../contexts/peerContext.js";
 import { useNotification } from "../../contexts/useNotification.js";
 import TokenTransferModal from "./TokenTransferModal.js";
+import RedeemModal from "./RedeemModal.js";
+import b4a from "b4a";
 
 export default function TokenWalletPage({ onBack }) {
     const peer = usePeer();
@@ -14,10 +16,11 @@ export default function TokenWalletPage({ onBack }) {
     const [tokens, setTokens] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentBlock, setCurrentBlock] = useState(0);
-    const [modal, setModal] = useState(null); // { mode, tick, humanBal, rawBal, dec }
+    const [modal, setModal] = useState(null);       // { mode, tick, humanBal, rawBal, dec }
+    const [redeemOpen, setRedeemOpen] = useState(false);
 
     // format a human decimal string with thousands‐separators
-    const fnumHuman = (human) => {
+    const fnumHuman = human => {
         const [i, d] = String(human).split(".");
         const withCommas = i.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return d != null ? `${withCommas}.${d}` : withCommas;
@@ -37,23 +40,20 @@ export default function TokenWalletPage({ onBack }) {
     useEffect(() => {
         if (!peer) return;
         let alive = true;
-        const tick = async () => {
+        async function tick() {
             const blk = await peer.protocol_instance.get("currentBlock");
             if (alive) setCurrentBlock(Number(blk));
-        };
+        }
         tick();
         const id = setInterval(tick, 5000);
-        return () => {
-            alive = false;
-            clearInterval(id);
-        };
+        return () => { alive = false; clearInterval(id); };
     }, [peer]);
 
     // load + refresh token list every 5s
     useEffect(() => {
         if (!peer) return;
         let alive = true;
-        const load = async () => {
+        async function load() {
             setLoading(true);
             const list = [];
             const length = await peer.protocol_instance.api.getUserTokensLength(
@@ -80,13 +80,10 @@ export default function TokenWalletPage({ onBack }) {
             }
             if (alive) setTokens(list);
             setLoading(false);
-        };
+        }
         load();
         const id = setInterval(load, 5000);
-        return () => {
-            alive = false;
-            clearInterval(id);
-        };
+        return () => { alive = false; clearInterval(id); };
     }, [peer]);
 
     // low-level tx + notification
@@ -102,90 +99,95 @@ export default function TokenWalletPage({ onBack }) {
         }
     }
 
+    // redeem handler
+    const handleRedeem = voucherBase64 => {
+        try {
+            const buf = b4a.from(voucherBase64, "base64");
+            const cmd = JSON.parse(buf.toString("utf8"));
+            if (
+                (cmd.op === "transfer" || cmd.op === "tap-transfer") &&
+                cmd.addr === peer.wallet.publicKey
+            ) {
+                doOp(cmd);
+            } else {
+                throw new Error("Not a valid voucher");
+            }
+        } catch (e) {
+            notify(e.message, "error");
+        } finally {
+            setRedeemOpen(false);
+        }
+    };
+
     return html`
         <div className="hf-content token-wallet">
-            <button className="secondary back-btn" onClick=${onBack}>← Back</button>
-            <h2>Your Tokens</h2>
+            <div className="tw-header">
+                <button className="secondary back-btn" onClick=${onBack}>
+                    ← Back
+                </button>
+                <button
+                        className="hf-deploy-btn redeem-btn"
+                        onClick=${() => setRedeemOpen(true)}
+                >
+                    Redeem
+                </button>
+            </div>
 
+            <h2>Your Tokens</h2>
             ${loading
                     ? html`<p>Loading…</p>`
                     : tokens.length === 0
                             ? html`<p>You have no tokens.</p>`
-                            : tokens.map(
-                                    ({ tick, humanBal, rawBal, dec, deployment }) => {
-                                        const lastBlock = Number(deployment.fun.last_block);
-                                        const isFailed =
-                                                currentBlock > lastBlock && deployment.fun.liq === "0";
-                                        const isGrad = deployment.fun.liq !== "0";
-
-                                        return html`
-                                            <div className="token-row" key=${tick}>
-                                                <span className="token-name">${tick.toUpperCase()}</span>
-                                                <span className="token-balance">${fnumHuman(humanBal)}</span>
-                                                <div className="token-actions">
-                                                    ${isFailed &&
-                                                    html`
-                                                        <button
-                                                                onClick=${() => doOp({ op: "refun", tick })}
-                                                        >
-                                                            Refun
-                                                        </button>`}
-                                                    ${isGrad &&
-                                                    html`
-                                                        <button
-                                                                onClick=${() =>
-                                                                        setModal({
-                                                                            mode: "hyperwarp",
-                                                                            tick,
-                                                                            humanBal,
-                                                                            rawBal,
-                                                                            dec,
-                                                                        })}
-                                                        >
-                                                            Send to Hypermall
-                                                        </button>`}
-                                                    <button
-                                                            onClick=${() =>
-                                                                    setModal({
-                                                                        mode: "transfer",
-                                                                        tick,
-                                                                        humanBal,
-                                                                        rawBal,
-                                                                        dec,
-                                                                    })}
-                                                    >
-                                                        Transfer
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }
-                            )}
-
-            ${modal &&
-            html`
+                            : tokens.map(({ tick, humanBal, rawBal, dec, deployment }) => {
+                                const lastBlock = Number(deployment.fun.last_block);
+                                const isFailed  = currentBlock > lastBlock && deployment.fun.liq === "0";
+                                const isGrad    = deployment.fun.liq !== "0";
+                                return html`
+                                    <div className="token-row" key=${tick}>
+                                        <span className="token-name">${tick.toUpperCase()}</span>
+                                        <span className="token-balance">${fnumHuman(humanBal)}</span>
+                                        <div className="token-actions">
+                                            ${isFailed && html`
+                                                <button onClick=${() => doOp({ op: "refun", tick })}>
+                                                    Refun
+                                                </button>`}
+                                            ${isGrad && html`
+                                                <button onClick=${() => setModal({
+                                                    mode: "hyperwarp",
+                                                    tick, humanBal, rawBal, dec
+                                                })}>
+                                                    Send to Hypermall
+                                                </button>`}
+                                            <button onClick=${() => setModal({
+                                                mode: "transfer",
+                                                tick, humanBal, rawBal, dec
+                                            })}>
+                                                Transfer
+                                            </button>
+                                        </div>
+                                    </div>`;
+                            })}
+            ${modal && html`
                 <${TokenTransferModal}
                         mode=${modal.mode}
                         maxHuman=${modal.humanBal}
                         maxRaw=${modal.rawBal}
                         decimals=${modal.dec}
                         onConfirm=${({ amt, to }) => {
-                            const base = { op: "transfer", tick: modal.tick, amt };
-                            const cmd =
-                                    modal.mode === "transfer"
-                                            ? { ...base, addr: to.trim(), from: null, sig: null, nonce: null, dta: null }
-                                            : {
-                                                ...base,
-                                                addr: peer.contract_instance.graduation_authority,
-                                                from: null,
-                                                sig: null,
-                                                nonce: null,
-                                                dta: null,
-                                            };
+                            const base = { op:"transfer", tick:modal.tick, amt };
+                            const cmd = modal.mode === "transfer"
+                                    ? { ...base, addr:to.trim(), from:null, sig:null, nonce:null, dta:null }
+                                    : { ...base, addr:peer.contract_instance.graduation_authority, from:null, sig:null, nonce:null, dta:null };
                             doOp(cmd);
                             setModal(null);
                         }}
                         onClose=${() => setModal(null)}
+                />
+            `}
+            ${redeemOpen && html`
+                <${RedeemModal}
+                        onConfirm=${handleRedeem}
+                        onClose=${() => setRedeemOpen(false)}
                 />
             `}
         </div>

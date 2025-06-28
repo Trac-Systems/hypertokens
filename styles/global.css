@@ -27,7 +27,6 @@
 /* Main page title */
 .app-title {
   font-size: 1.75rem;
-  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -147,7 +146,6 @@
 /* Card header/title bar */
 .card-title {
   font-size: 1.125rem;
-  font-weight: 600;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-primary);

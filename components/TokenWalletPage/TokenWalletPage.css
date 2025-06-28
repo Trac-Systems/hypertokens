@@ -1,3 +1,7 @@
+/* ===============================
+   File: components/TokenWallet/TokenWalletPage.css
+   =============================== */
+
 .token-wallet h2 {
     margin: 1rem 0 .75rem;
     font-size: 1.5rem;
@@ -40,77 +44,15 @@
 
 .back-btn { margin-bottom: .5rem; }
 
-/* File: components/TokenWallet/TokenTransferModal.css */
-
-.token-transfer-modal {
-    max-width: 32rem;
-    padding: 1.5rem;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-}
-
-.token-transfer-modal h2 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-    color: var(--text-primary);
-}
-
-.tt-label {
-    display: block;
-    margin-bottom: 1rem;
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-.tt-input {
-    width: 100%;
-    padding: 0.75rem;
-    margin-top: 0.25rem;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background: var(--bg-card);
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-
-.tt-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-}
-
-/* make both Confirm and Cancel the same fixed height and center their content */
-.tt-actions .hf-modal-btn {
+/* new header container for Back + Redeem */
+.tw-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 3rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    padding: 0 1.5rem;   /* horizontal padding only */
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
-/* Confirm expands to fill available space */
-.tt-confirm {
-    flex: 1;
-    background: var(--accent-primary);
-    color: #111;
-}
-
-.tt-confirm:hover {
-    background: var(--accent-secondary);
-}
-
-/* Cancel takes its content width */
-.tt-cancel {
-    flex: 0 0 auto;
-    background: none;
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    margin-top : 8px;
-}
-
-.tt-cancel:hover {
-    background: rgba(255,255,255,0.05);
+/* style Redeem like your deploy button, pushed to the right */
+.redeem-btn {
+    margin-left: auto;
 }
