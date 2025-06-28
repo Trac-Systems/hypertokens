@@ -4,21 +4,20 @@
 import { html } from "htm/react";
 import { useState, useEffect } from "react";
 import { usePeer } from "../../contexts/peerContext.js";
+import { useNotification } from "../../contexts/useNotification.js";
 
-/**
- * Modal for deposit or withdraw TAP.
- * Withdraw mode shows user's pending withdraw transactions and a form to request new withdraws.
- */
 export default function TapTransferModal({ mode = "deposit", onClose }) {
+    const peer = usePeer();
+    const { notify } = useNotification();
+
     const [input, setInput] = useState("");
     const [info, setInfo] = useState(null);
     const [txList, setTxList] = useState([]);
     const [address, setAddress] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const peer = usePeer();
 
-    // Clear state & reload withdraw list when mode changes
+    // Clear state and optionally start polling withdraw list
     useEffect(() => {
         setInput("");
         setInfo(null);
@@ -26,12 +25,19 @@ export default function TapTransferModal({ mode = "deposit", onClose }) {
         setAddress("");
         setError(null);
         setLoading(false);
+
+        let intervalId;
+
         if (mode === "withdraw" && peer) {
             loadWithdrawList();
+            intervalId = setInterval(loadWithdrawList, 10000); // Refresh every 10 seconds
         }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
     }, [mode, peer]);
 
-    // Load existing withdraw requests + fetch their links
     const loadWithdrawList = async () => {
         setLoading(true);
         setError(null);
@@ -45,8 +51,12 @@ export default function TapTransferModal({ mode = "deposit", onClose }) {
                     peer.wallet.publicKey,
                     i
                 );
-                const info = await peer.protocol_instance.api.getWithdrawInfoFeature(req.tx);
-                list.push({ ...req, link: info.link });
+                if(req !== null){
+                    const info = await peer.protocol_instance.api.getWithdrawInfoFeature(req.tx);
+                    if(info !== null){
+                        list.push({ ...req, link: info.link });
+                    }
+                }
             }
             setTxList(list);
         } catch (err) {
@@ -56,12 +66,10 @@ export default function TapTransferModal({ mode = "deposit", onClose }) {
         }
     };
 
-    // Fetch deposit info
     const handleFetchInfo = async () => {
         setLoading(true);
         setError(null);
         try {
-            if (!peer) throw new Error("Peer not available");
             const res = await peer.protocol_instance.api.getDepositInfoFeature(
                 peer.contract_instance.tap_token,
                 input.trim(),
@@ -76,37 +84,70 @@ export default function TapTransferModal({ mode = "deposit", onClose }) {
         }
     };
 
-    // Request new withdraw via tap-withdraw
     const handleRequestWithdraw = async () => {
         setLoading(true);
         setError(null);
-
         try {
-            if (!peer) throw new Error("Peer not available");
             const amtStr = input.trim();
             if (!amtStr) throw new Error("Enter amount to withdraw");
-            if (!/^\d+(?:\.\d{1,18})?$/.test(amtStr))
-                throw new Error("Invalid amount (up to 18 decimals)");
+            if (!/^\d+(?:\.\d{1,18})?$/.test(amtStr)) throw new Error("Invalid amount (max 18 decimals)");
             if (!address.trim()) throw new Error("Enter a Bitcoin address");
 
             const cmd = {
-                op:   "tap-withdraw",
+                op: "tap-withdraw",
                 tick: peer.contract_instance.tap_token,
-                amt:  amtStr,
+                amt: amtStr,
                 addr: address.trim(),
             };
 
-            // simulate
             let tx = await peer.protocol_instance._transact(cmd, { sim: 1 });
             if (typeof tx === "string") throw new Error(tx);
-
-            // execute
             tx = await peer.protocol_instance._transact(cmd, {});
             if (typeof tx === "string") throw new Error(tx);
 
+            notify("Withdraw requested", "success");
             setInput("");
+            setAddress("");
             await loadWithdrawList();
         } catch (err) {
+            notify(err.message, "error");
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSendTransfer = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const amtStr = input.trim();
+            if (!amtStr) throw new Error("Enter amount to send");
+            if (!/^\d+(?:\.\d{1,18})?$/.test(amtStr)) throw new Error("Invalid amount (max 18 decimals)");
+            if (!address.trim()) throw new Error("Enter recipient address");
+
+            const isWarp = address.trim().toLowerCase() === "hypermall";
+            const cmd = {
+                op: "tap-transfer",
+                tick: peer.contract_instance.tap_token,
+                amt: amtStr,
+                addr: isWarp ? peer.contract_instance.graduation_authority : address.trim(),
+                from : null,
+                sig : null,
+                nonce : null,
+                dta : null
+            };
+
+            let tx = await peer.protocol_instance._transact(cmd, { sim: 1 });
+            if (typeof tx === "string") throw new Error(tx);
+            tx = await peer.protocol_instance._transact(cmd, {});
+            if (typeof tx === "string") throw new Error(tx);
+
+            notify("Transfer successful", "success");
+            setInput("");
+            setAddress("");
+        } catch (err) {
+            notify(err.message, "error");
             setError(err.message);
         } finally {
             setLoading(false);
@@ -116,78 +157,117 @@ export default function TapTransferModal({ mode = "deposit", onClose }) {
     return html`
         <div className="hf-modal-backdrop" role="dialog" aria-modal="true">
             <div className="hf-modal-card">
-                <h2>${mode === "deposit" ? "Deposit TAP" : "Withdraw TAP"}</h2>
+                <h2>
+                    ${mode === "deposit"
+        ? "Deposit TAP"
+        : mode === "withdraw"
+            ? "Withdraw TAP"
+            : "Transfer TAP"}
+                </h2>
 
                 <div className="modal-body">
-                    ${mode === "deposit"
-                            ? html`
-                                <input
-                                        className="hf-modal-input"
-                                        type="number"
-                                        placeholder="Amount to deposit"
-                                        value=${input}
-                                        onInput=${(e) => setInput(e.target.value)}
-                                />
-                                ${error && html`<p className="error-text">${error}</p>`}
-                                ${info
-                                        ? html`
-                                            <button
-                                                    className="hf-modal-btn primary"
-                                                    onClick=${() => window.open(info.link, "_blank")}
-                                            >
-                                                Deposit Now
-                                            </button>
-                                        `
-                                        : html`
-                                            <button
-                                                    className="hf-modal-btn primary"
-                                                    onClick=${handleFetchInfo}
-                                                    disabled=${loading || !input.trim()}
-                                            >
-                                                ${loading ? "Loading…" : "Get Deposit Link"}
-                                            </button>
-                                        `}
-                            `
-                            : html`
-                                <input
-                                        className="hf-modal-input"
-                                        type="number"
-                                        placeholder="Enter amount to withdraw"
-                                        value=${input}
-                                        onInput=${(e) => setInput(e.target.value)}
-                                />
-                                <input
-                                        className="hf-modal-input"
-                                        type="text"
-                                        placeholder="Receiving Bitcoin address"
-                                        value=${address}
-                                        onInput=${(e) => setAddress(e.target.value)}
-                                />
-                                ${error && html`<p className="error-text">${error}</p>`}
-                                <button
-                                        className="hf-modal-btn primary"
-                                        onClick=${handleRequestWithdraw}
-                                        disabled=${loading || !input.trim() || !address.trim()}
-                                >
-                                    ${loading ? "Requesting…" : "Request Withdraw"}
-                                </button>
-                                <hr />
-                                <h3>Your Withdraw Requests</h3>
-                                <div className="withdraw-list-container">
-                                    ${txList.map((tx) => {
-                                        const full = tx.tx;
-                                        return html`
-                                            <button
-                                                    key=${full}
-                                                    className="hf-modal-btn primary withdraw-item"
-                                                    onClick=${() => window.open(tx.link, "_blank")}
-                                            >
-                                                ${full}
-                                            </button>
-                                        `;
-                                    })}
-                                </div>
-                            `}
+                    ${(mode === "deposit" || mode === "withdraw") &&
+    html`
+                        <input
+                            className="hf-modal-input"
+                            type="number"
+                            step="0.00000001"
+                            placeholder="Amount"
+                            value=${input}
+                            onInput=${(e) => setInput(e.target.value)}
+                        />
+                    `}
+
+                    ${mode === "withdraw" &&
+    html`
+                        <input
+                            className="hf-modal-input"
+                            type="text"
+                            placeholder="Receiving Bitcoin address"
+                            value=${address}
+                            onInput=${(e) => setAddress(e.target.value)}
+                        />
+                    `}
+
+                    ${mode === "transfer" &&
+    html`
+                        <input
+                            className="hf-modal-input"
+                            type="number"
+                            step="0.00000001"
+                            placeholder="Amount to send"
+                            value=${input}
+                            onInput=${(e) => setInput(e.target.value)}
+                        />
+                        <input
+                            className="hf-modal-input"
+                            type="text"
+                            placeholder="Recipient Trac address (or type 'hypermall')"
+                            value=${address}
+                            onInput=${(e) => setAddress(e.target.value)}
+                        />
+                    `}
+
+                    ${error && html`<p className="error-text">${error}</p>`}
+
+                    ${mode === "deposit" &&
+    html`
+                        ${info
+        ? html`
+                                  <button
+                                      className="hf-modal-btn primary"
+                                      onClick=${() => window.open(info.link, "_blank")}
+                                  >
+                                      Deposit Now
+                                  </button>
+                              `
+        : html`
+                                  <button
+                                      className="hf-modal-btn primary"
+                                      onClick=${handleFetchInfo}
+                                      disabled=${loading || !input.trim()}
+                                  >
+                                      ${loading ? "Loading…" : "Get Deposit Link"}
+                                  </button>
+                              `}
+                    `}
+
+                    ${mode === "withdraw" &&
+    html`
+                        <button
+                            className="hf-modal-btn primary"
+                            onClick=${handleRequestWithdraw}
+                            disabled=${loading || !input.trim() || !address.trim()}
+                        >
+                            ${loading ? "Requesting…" : "Request Withdraw"}
+                        </button>
+                        <hr />
+                        <h3>Your Withdraw Requests</h3>
+                        <div className="withdraw-list-container">
+                            ${txList.map((tx) =>
+        html`
+                                    <button
+                                        key=${tx.tx}
+                                        className="hf-modal-btn primary withdraw-item"
+                                        onClick=${() => window.open(tx.link, "_blank")}
+                                    >
+                                        ${tx.tx}
+                                    </button>
+                                `
+    )}
+                        </div>
+                    `}
+
+                    ${mode === "transfer" &&
+    html`
+                        <button
+                            className="hf-modal-btn primary"
+                            onClick=${handleSendTransfer}
+                            disabled=${loading || !input.trim() || !address.trim()}
+                        >
+                            ${loading ? "Sending…" : "Send Transfer"}
+                        </button>
+                    `}
                 </div>
 
                 <div className="modal-actions">

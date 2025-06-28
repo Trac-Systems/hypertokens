@@ -1,6 +1,3 @@
-// ===============================
-// File: components/MintOverview/MintOverview.js
-// ===============================
 import { html } from "htm/react";
 import { useState, useEffect } from "react";
 import { usePeer } from "../../contexts/peerContext.js";
@@ -19,7 +16,7 @@ export default function MintOverview() {
     const [page, setPage] = useState(0);
     const [selected, setSelected] = useState(null);
     const [showDeploy, setShowDeploy] = useState(false);
-    const [showTransfer, setShowTransfer] = useState(null); // "deposit" | "withdraw"
+    const [showTransfer, setShowTransfer] = useState(null); // "deposit" | "withdraw" | "transfer"
     const { mints, loading, totalPages } = useMintList({ page, pageSize });
 
     // ── fetch & truncate TAP balance every 5s ──
@@ -30,13 +27,10 @@ export default function MintOverview() {
         async function fetchBalance() {
             if (!peer) return;
             try {
-                // getBalanceFeature already returns a decimal string
                 const bal = await peer.protocol_instance.api.getBalanceFeature(
                     peer.wallet.publicKey,
                     peer.contract_instance.tap_token
                 );
-
-                // truncate to max 8 decimals
                 const [intPart, decPart = ""] = bal.split(".");
                 const truncated =
                     decPart.length > 8
@@ -51,7 +45,6 @@ export default function MintOverview() {
             }
         }
 
-        // initial fetch + polling
         fetchBalance();
         intervalId = setInterval(fetchBalance, 5000);
 
@@ -71,6 +64,7 @@ export default function MintOverview() {
                     onDeploy=${() => setShowDeploy(true)}
                     onDeposit=${() => setShowTransfer("deposit")}
                     onWithdraw=${() => setShowTransfer("withdraw")}
+                    onTransfer=${() => setShowTransfer("transfer")}
             />
 
             <main className="hf-content">
@@ -87,7 +81,7 @@ export default function MintOverview() {
                     <button
                             className="page-btn"
                             disabled=${!hasPrev}
-                            onClick=${() => setPage(p => Math.max(p - 1, 0))}
+                            onClick=${() => setPage((p) => Math.max(p - 1, 0))}
                     >
                         Prev
                     </button>
@@ -97,7 +91,7 @@ export default function MintOverview() {
                     <button
                             className="page-btn"
                             disabled=${!hasNext}
-                            onClick=${() => setPage(p => p + 1)}
+                            onClick=${() => setPage((p) => p + 1)}
                     >
                         Next
                     </button>
@@ -109,10 +103,12 @@ export default function MintOverview() {
             ${showDeploy &&
             html`<${CreateHyperfunForm} onClose=${() => setShowDeploy(false)} />`}
             ${showTransfer &&
-            html`<${TapTransferModal}
-                    mode=${showTransfer}
-                    onClose=${() => setShowTransfer(null)}
-            />`}
+            html`
+                <${TapTransferModal}
+                        mode=${showTransfer}
+                        onClose=${() => setShowTransfer(null)}
+                />
+            `}
         </div>
     `;
 }
