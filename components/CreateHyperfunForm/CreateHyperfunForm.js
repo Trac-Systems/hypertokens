@@ -76,7 +76,7 @@ export default function CreateHyperfunForm({ onClose }) {
     return html`
         <div className="hf-modal-backdrop" role="dialog" aria-modal="true">
             <div className="hf-modal-card">
-                <h2>Create a Hyperfun Project</h2>
+                <h2>Deploy a Ticker</h2>
                 <form onSubmit=${handleSubmit}>
                     <label>
                         <span>Ticker</span>
@@ -86,6 +86,7 @@ export default function CreateHyperfunForm({ onClose }) {
                                 maxLength=${12}
                                 placeholder="ticker"
                                 className=${errs.ticker ? "error" : ""}
+                                autoFocus
                         />
                         ${errs.ticker && html`<span className="errtxt">${errs.ticker}</span>`}
                     </label>

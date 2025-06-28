@@ -237,7 +237,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                             onClick=${handleRequestWithdraw}
                             disabled=${loading || !input.trim() || !address.trim()}
                         >
-                            ${loading ? "Requesting…" : "Request Withdraw"}
+                            Request Withdraw
                         </button>
                     `}
 
@@ -248,7 +248,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                             onClick=${handleSendTransfer}
                             disabled=${loading || !input.trim() || (!warp && !address.trim())}
                         >
-                            ${loading ? "Sending…" : "Send Transfer"}
+                            Send Transfer"
                         </button>
                     `}
 
