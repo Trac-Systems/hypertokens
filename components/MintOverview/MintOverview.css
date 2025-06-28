@@ -34,7 +34,8 @@
 .hf-content {
     padding: 1rem 2rem 2rem 2rem;
     overflow-y: auto;
-    max-height: calc(100vh - 100px);
+    /* increase the subtraction so the scrollable area is a bit shorter */
+    max-height: calc(100vh - 130px);
 }
 
 /* ── Deploy & Pagination Buttons ── */
@@ -265,6 +266,48 @@ button.secondary:hover {
 .mint-details-table td {
     color: var(--text-primary);
     word-break: break-word;
+}
+
+/* ------------------------------------------------------------------------
+   TAP controls container
+   ------------------------------------------------------------------------ */
+.tap-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-card);
+}
+
+/* Slightly tighten up the tap-balance label */
+.tap-balance {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Override small spacing on the secondary buttons inside tap-controls */
+.tap-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* Push “Your Hypertokens” and “Deploy” to the right */
+.hf-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+/* Give the hypertokens button a little margin so it’s not jammed against the Tap block */
+.hypertokens-btn {
+    margin-left: auto;
+}
+
+#hf-search-input{
+    margin-top: 10px;
 }
 
 

@@ -12,6 +12,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
 
     const [input,   setInput]   = useState("");
     const [address, setAddress] = useState("");
+    const [warp,    setWarp]    = useState(false);   // new: toggle for Hypermall
     const [txList,  setTxList]  = useState([]);
     const [loading, setLoading] = useState(false);
     const [error,   setError]   = useState(null);
@@ -108,50 +109,164 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
         }
     };
 
+    // submit a new tap‐transfer
+    const handleSendTransfer = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const amtStr = input.trim();
+            if (!amtStr) throw new Error("Enter amount to send");
+            if (!/^\d+(?:\.\d{1,18})?$/.test(amtStr))
+                throw new Error("Invalid amount (max 18 decimals)");
+            if (!warp && !address.trim())
+                throw new Error("Enter recipient Trac address or select Send to Hypermall");
+
+            const cmd = {
+                op:   "tap-transfer",
+                tick: peer.contract_instance.tap_token,
+                amt:  amtStr,
+                addr: warp
+                    ? peer.contract_instance.graduation_authority
+                    : address.trim(),
+                from:  null,
+                sig:   null,
+                nonce: null,
+                dta:   null
+            };
+
+            let tx = await peer.protocol_instance._transact(cmd, { sim: 1 });
+            if (typeof tx === "string") throw new Error(tx);
+            tx = await peer.protocol_instance._transact(cmd, {});
+            if (typeof tx === "string") throw new Error(tx);
+
+            notify("Transfer successful", "success");
+            setInput("");
+            setAddress("");
+            setWarp(false);
+        } catch (e) {
+            notify(e.message, "error");
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return html`
         <div className="hf-modal-backdrop" role="dialog" aria-modal="true">
             <div className="hf-modal-card">
-                <h2>Withdraw TAP</h2>
+                <h2>
+                    ${mode === "deposit"
+                            ? "Deposit TAP"
+                            : mode === "withdraw"
+                                    ? "Withdraw TAP"
+                                    : "Transfer TAP"}
+                </h2>
 
                 <div className="modal-body">
-                    <input
+                    ${(mode === "deposit" || mode === "withdraw") &&
+                    html`
+                        <input
                             className="hf-modal-input"
                             type="number"
                             step="0.00000001"
-                            placeholder="Amount to withdraw"
+                            placeholder="Amount"
                             value=${input}
                             onInput=${e => setInput(e.target.value)}
-                    />
-                    <input
+                        />
+                    `}
+
+                    ${mode === "withdraw" &&
+                    html`
+                        <input
                             className="hf-modal-input"
                             type="text"
                             placeholder="Receiving Bitcoin address"
                             value=${address}
                             onInput=${e => setAddress(e.target.value)}
-                    />
+                        />
+                    `}
+
+                    ${mode === "transfer" &&
+                    html`
+                        <input
+                            className="hf-modal-input"
+                            type="number"
+                            step="0.00000001"
+                            placeholder="Amount to send"
+                            value=${input}
+                            onInput=${e => setInput(e.target.value)}
+                        />
+
+                        <label style=${{display: "flex", alignItems: "center", gap: "0.5rem", margin: "1rem 0"}}>
+                            <input
+                                type="checkbox"
+                                checked=${warp}
+                                onChange=${e => setWarp(e.target.checked)}
+                            />
+                            Send to Hypermall
+                        </label>
+
+                        ${!warp && html`
+                            <input
+                                className="hf-modal-input"
+                                type="text"
+                                placeholder="Recipient Trac address"
+                                value=${address}
+                                onInput=${e => setAddress(e.target.value)}
+                            />
+                        `}
+                    `}
+
                     ${error && html`<p className="error-text">${error}</p>`}
-                    <button
+
+                    ${mode === "deposit" &&
+                    html`
+                        <button
+                            className="hf-modal-btn primary"
+                            onClick=${/* deposit logic unchanged */ () => {}}
+                            disabled
+                        >
+                            Deposit…
+                        </button>
+                    `}
+
+                    ${mode === "withdraw" &&
+                    html`
+                        <button
                             className="hf-modal-btn primary"
                             onClick=${handleRequestWithdraw}
                             disabled=${loading || !input.trim() || !address.trim()}
-                    >
-                        ${loading ? "Requesting…" : "Request Withdraw"}
-                    </button>
+                        >
+                            ${loading ? "Requesting…" : "Request Withdraw"}
+                        </button>
+                    `}
 
+                    ${mode === "transfer" &&
+                    html`
+                        <button
+                            className="hf-modal-btn primary"
+                            onClick=${handleSendTransfer}
+                            disabled=${loading || !input.trim() || (!warp && !address.trim())}
+                        >
+                            ${loading ? "Sending…" : "Send Transfer"}
+                        </button>
+                    `}
+
+                    ${mode === "withdraw" && html`
                     <hr />
-
                     <h3>Your Withdraw Requests</h3>
                     <div className="withdraw-list-container">
                         ${txList.map(({ tx, amount, link }) => html`
-                            <button
-                                    key=${tx}
-                                    className="hf-modal-btn primary withdraw-item"
-                                    onClick=${() => link && window.open(link, "_blank")}
-                            >
-                                ${tx.slice(0,6)}…${tx.slice(-6)} — ${fnumHuman(amount)} TAP
-                            </button>
+                        <button
+                            key=${tx}
+                            className="hf-modal-btn primary withdraw-item"
+                            onClick=${() => link && window.open(link, "_blank")}
+                        >
+                            ${tx.slice(0,6)}…${tx.slice(-6)} — ${fnumHuman(amount)} TAP
+                        </button>
                         `)}
                     </div>
+                    `}
                 </div>
 
                 <div className="modal-actions">
