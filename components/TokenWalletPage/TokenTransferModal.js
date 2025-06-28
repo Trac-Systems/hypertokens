@@ -86,7 +86,7 @@ export default function TokenTransferModal({
                         Recipient Address
                         <input
                                 className="hf-modal-input tt-input"
-                                placeholder="64-char hex"
+                                placeholder="Trac address"
                                 value=${to}
                                 onInput=${(e) => {
                                     setTo(e.target.value);

@@ -239,6 +239,14 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                 >
                   ${loading ? "Loading…" : "Get Deposit Link"}
                 </button>
+                                    
+                <hr/>
+                <button
+                        className="hf-modal-btn secondary"
+                        onClick=${() => window.open("https://chromewebstore.google.com/detail/tap-wallet/blcaacmeglnfblclocdgaomhopnfobof", "_blank")}
+                >
+                    Please use the official TAP Wallet and enable 1TX-Transfers.
+                </button>
               `}
                     `}
 
@@ -252,6 +260,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                             ${loading ? "Requesting…" : "Request Withdraw"}
                         </button>
                         <hr />
+                        <label>Once granted, click on the withdraw requests below to receive your TAP.</label>
                         <h3>Your Withdraw Requests</h3>
                         <div className="withdraw-list-container">
                             ${txList.map(({ tx, amount, link }) => html`
