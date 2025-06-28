@@ -8,8 +8,8 @@
     "type": "desktop",
     "gui": {
       "backgroundColor": "#1F2430",
-      "height": "540",
-      "width": "720"
+      "height": "700",
+      "width": "1170"
     }
   },
   "dependencies": {

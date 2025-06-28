@@ -18,7 +18,7 @@ export default function HeaderBar({ balanceTAP = "0", onDeploy, onDeposit, onWit
             detail: "TokenWalletPage",
         }))}
                 >
-                    Wallet
+                    Your Hypertokens
                 </button>
             </div>
             <button className="hf-deploy-btn" onClick=${onDeploy}>Deploy</button>
