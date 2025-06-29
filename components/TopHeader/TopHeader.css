@@ -1,4 +1,4 @@
-/* styles for Header.js - can be in App.css or a dedicated Header.css */
+/* styles for TopHeader.js - can be in App.css or a dedicated TopHeader.css */
 
 .app-header.sleek {
     display: flex;
@@ -215,4 +215,9 @@
     /* Example: background-color: rgba(239, 68, 68, 0.1); */
     background-color: rgba(var(--error-color-rgb, 239, 68, 68), 0.1);
     color: var(--error-color);
+}
+
+.help-modal{
+    height: 400px;
+    overflow: scroll;
 }
