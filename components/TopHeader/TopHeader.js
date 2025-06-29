@@ -186,10 +186,11 @@ export function TopHeader() {
   
   • Bonding curve similar to Pump.fun with a few tweaks.
   • Mintfun: tokens/TAP listings go to Hypermall.io on graduations.
+  • Tokens graduate upon minting out and having a min. liquidity of 3,000 TAP.
   • Refun: refund your TAP if graduations fail & hop on the next.
   • Burnfun: burn graduated tokens and get TAP back at a secured floor.
   • Advanced options to deploy new tickers.
-  • Fixed gas fee of 0.005 TAP apply per TX (approx. 2 cent)
+  • Fixed gas fee of 0.01 TAP apply per TX (approx. 4 cent)
   
   We guess the rest you may figure yourself, it's fun -- Hyperfun!
                 `}
