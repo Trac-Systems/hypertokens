@@ -63,6 +63,9 @@ export default function MintModal({ mint: initial, onClose }) {
 
     /* ────────── 4. derive “human” values from latest raw ────────── */
     const [supply, setSupply] = useState("0");
+    const [targetLiquidity, setTargetLiquidity] = useState("0");
+    const [currentLiquidity, setCurrentLiquidity] = useState("0");
+    const [reserve, setReserve] = useState("0");
     const [done,   setDone]   = useState("0");
     const [rem,    setRem]    = useState("0");
     const [pct,    setPct]    = useState(0);
@@ -86,12 +89,34 @@ export default function MintModal({ mint: initial, onClose }) {
             const currPH  = await peer.protocol_instance.fromBigIntString(r.fun.curr_price,   tapDep.dec);
             const targPH  = await peer.protocol_instance.fromBigIntString(r.fun.target_price, tapDep.dec);
 
+            let minliq = await peer.protocol_instance.getSigned('minliq');
+            if(null === minliq){
+                minliq = '0;'
+            }
+
+            let liq = await peer.protocol_instance.getSigned('liq/'+JSON.stringify(r.tick));
+            if(null === liq){
+                liq = '0'
+            }
+
+            let reserve = await peer.protocol_instance.getSigned('rsrv/'+JSON.stringify(r.tick));
+            if(null === reserve){
+                reserve = '0'
+            }
+
+            const targL   = await peer.protocol_instance.fromBigIntString(minliq, tapDep.dec);
+            const currL   = await peer.protocol_instance.fromBigIntString(liq, tapDep.dec);
+            const res   = await peer.protocol_instance.fromBigIntString(reserve, tapDep.dec);
+
             const pctBI   = r.supply === "0"
                 ? 0n
                 : (BigInt(doneRaw) * 10000n) / BigInt(r.supply);
             const pctNum  = Number(pctBI) / 100;
 
             if (alive) {
+                setReserve(res);
+                setTargetLiquidity(targL);
+                setCurrentLiquidity(currL)
                 setSupply(supplyH);
                 setDone(doneH);
                 setRem(remH);
@@ -164,7 +189,10 @@ export default function MintModal({ mint: initial, onClose }) {
                 <tr><th>Supply</th>         <td>${fnum(supply)}</td></tr>
                 <tr><th>Minted</th>         <td>${fnum(done)} (${pct.toFixed(2)}%)</td></tr>
                 <tr><th>Remaining</th>      <td>${fnum(rem)}  (${(100-pct).toFixed(2)}%)</td></tr>
-                <tr><th>Current price</th>  <td>${fnum(currP)} TAP</td></tr>
+                <tr><th>${graduated && !failed ? 'Hypermall ' : ''}Liquidity</th>  <td>${fnum(currentLiquidity)} TAP</td></tr>
+                <tr><th>Burnable</th>  <td>${fnum(reserve)} TAP</td></tr>
+                <tr><th>Min. Liq. + Burnable</th>  <td>${fnum(targetLiquidity)} TAP on graduation</td></tr>
+                <tr><th>${graduated && !failed ? 'Graduation price' : 'Current price'}</th>  <td>${fnum(currP)} TAP</td></tr>
                 <tr><th>Target price</th>   <td>${fnum(targP)} TAP</td></tr>
                 <tr><th>Deadline block</th>  <td>${lastBlock.toLocaleString()}</td></tr>
                 <tr><th>Current block</th>   <td>${currentBlock.toLocaleString()}</td></tr>

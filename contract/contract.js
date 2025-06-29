@@ -393,7 +393,7 @@ class HypertokensContract extends Contract {
             const target_price = this.protocol.safeBigInt(deployment.fun.target_price, tap_deployment.dec);
             if(null === target_price) return new Error('Invalid target price');
             let price = (ratioCubed * target_price) / 10n**18n;
-            if (price < 1n) price = 1n;
+            if (price < 1000n) price = 1000n;
             deployment.fun.curr_price = price.toString();
             const spent = (mint_amt * price) / 10n**18n;
             if(spent <= 0n) return new Error('Invalid spent amount');
