@@ -56,7 +56,7 @@ export default function MintCard({ mint, onMint }) {
             <p>Deadline: ${Number(mint.deadlineBlock).toLocaleString()}</p>
 
             <button className="hf-modal-btn secondary" onClick=${() => onMint(mint)}>
-                Mint
+                MintFUN
             </button>
         </div>
     `;

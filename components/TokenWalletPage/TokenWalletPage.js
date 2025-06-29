@@ -175,7 +175,7 @@ export default function TokenWalletPage({ onBack }) {
                                                         className="hf-modal-btn secondary"
                                                         onClick=${() => doOp({ op: "refun", tick })}
                                                 >
-                                                    Refun
+                                                    ReFUN
                                                 </button>`}
 
                                             ${isGrad &&
@@ -207,7 +207,7 @@ export default function TokenWalletPage({ onBack }) {
                                                                     dec,
                                                                 })}
                                                 >
-                                                    Burnfun
+                                                    BurnFUN
                                                 </button>`}
 
                                             <button

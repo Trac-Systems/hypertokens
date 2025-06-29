@@ -175,7 +175,7 @@ export default function MintModal({ mint: initial, onClose }) {
                             className="hf-modal-btn primary action-btn refun"
                             onClick=${handleAction}
                             disabled=${processing}>
-                        ${processing ? "Refunding…" : "Refun"}
+                        ${processing ? "Refunding…" : "ReFUN"}
                     </button>`}
 
                 ${!failed && !graduated && html`
