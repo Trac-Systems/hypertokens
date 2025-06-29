@@ -210,6 +210,7 @@ class HypertokensContract extends Contract {
     }
 
     async deploy(){
+        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         const tick = this.value.tick.trim().toLowerCase();
         if(['tap', 'trac', 'pipe', 'gib', 'dmt-nat', 'nat', 'hypermall'].includes(tick)) return new Error('This token is not mintable');
         const _dec = parseInt(this.value.dec);
@@ -259,7 +260,6 @@ class HypertokensContract extends Contract {
         if(null === hf_length){
             hf_length = 0;
         }
-        if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
         if(true === is_fun){
             await this.put('strtblck/'+this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase()), current_block);
         }
@@ -268,6 +268,7 @@ class HypertokensContract extends Contract {
         await this.put(length_key, length + 1);
         if(true === is_fun) await this.put(hf_length_key, hf_length + 1);
         await this.put(key, _deployment);
+        await this.collectGas(this.address, this.validator_address);
         if(true === this.protocol.peer.options.enable_logs){
             console.log('Deployed ticker', tick,
                 ',',
@@ -280,6 +281,7 @@ class HypertokensContract extends Contract {
     }
 
     async mint(){
+        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
@@ -315,7 +317,6 @@ class HypertokensContract extends Contract {
             balance += amt;
             com += amt;
             deployment.com = com.toString();
-            if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
             await this.put('d/'+tick, deployment);
             await this.put('b/'+this.address+'/'+tick, balance.toString());
             const token_exists = await this.get('te/'+this.address+'/'+tick);
@@ -328,6 +329,7 @@ class HypertokensContract extends Contract {
                 await this.put('tl/'+this.address, tokens_length + 1);
                 await this.put('te/'+this.address+'/'+tick, true);
             }
+            await this.collectGas(this.address, this.validator_address);
             if(true === this.protocol.peer.options.enable_logs){
                 console.log('Minting ticker', this.value.tick.trim().toLowerCase(),
                     ',',
@@ -351,6 +353,7 @@ class HypertokensContract extends Contract {
     }
 
     async mintfun(){
+        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
@@ -433,7 +436,6 @@ class HypertokensContract extends Contract {
             }
             total_spent += spent;
             let reserve = 0n;
-            let gas_collected = false;
             let min_liq = await this.get('minliq');
             if(null === min_liq){
                 min_liq = 0n;
@@ -457,8 +459,6 @@ class HypertokensContract extends Contract {
                     if(null === grad_tap_balance) return new Error('Invalid balance');
                 }
                 grad_tap_balance += liquidity;
-                if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
-                gas_collected = true;
                 deployment.fun.liq = liquidity.toString();
                 deployment.fun.res = reserve.toString();
                 await this.put('rsrv/'+tick, reserve.toString());
@@ -476,9 +476,6 @@ class HypertokensContract extends Contract {
                 await this.put('grdtx/'+this.tx, length);
                 await this.put('grd', length + 1);
             }
-            if(false === gas_collected){
-                if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
-            }
             await this.put(total_spent_key, total_spent.toString());
             await this.put(this.protocol.getBalanceKey(this.address, tap_deployment.tick), tap_balance.toString());
             await this.put(liq_key, liquidity.toString());
@@ -494,6 +491,7 @@ class HypertokensContract extends Contract {
                 await this.put('tl/'+this.address, tokens_length + 1);
                 await this.put('te/'+this.address+'/'+tick, true);
             }
+            await this.collectGas(this.address, this.validator_address);
             if(true === this.protocol.peer.options.enable_logs){
                 console.log('Minting ticker', this.value.tick.trim().toLowerCase(),
                     ',',
@@ -513,6 +511,7 @@ class HypertokensContract extends Contract {
     }
 
     async burnfun(){
+        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
@@ -556,11 +555,11 @@ class HypertokensContract extends Contract {
             if(null === tap_balance) return new Error('Invalid balance');
         }
         tap_balance += _return;
-        if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
         await this.put(this.protocol.getBalanceKey(this.address, tap_deployment.tick), tap_balance.toString());
         await this.put('b/'+this.address+'/'+tick, from_balance.toString());
         await this.put('rsrv/'+tick, reserve.toString());
         await this.put('d/'+tick, deployment);
+        await this.collectGas(this.address, this.validator_address);
         if(true === this.protocol.peer.options.enable_logs){
             console.log('Burn returned',
                 this.address,
@@ -575,6 +574,7 @@ class HypertokensContract extends Contract {
     }
 
     async refun(){
+        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
         if(null === tap_deployment) return new Error('TAP token not found');
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
@@ -604,9 +604,9 @@ class HypertokensContract extends Contract {
                 if(null === tap_balance) return new Error('Invalid balance');
             }
             tap_balance += total_spent;
-            if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
             await this.put(this.protocol.getBalanceKey(this.address, tap_deployment.tick), tap_balance.toString())
             await this.put(total_spent_key, '0');
+            await this.collectGas(this.address, this.validator_address);
             if(true === this.protocol.peer.options.enable_logs){
                 console.log('Refun', this.address, tap_deployment.tick, this.protocol.fromBigIntString(total_spent.toString(), tap_deployment.dec));
             }
@@ -616,6 +616,7 @@ class HypertokensContract extends Contract {
     }
 
     async transfer(){
+        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         let address = this.address;
         if(null !== this.value.from && null !== this.value.sig && null !== this.value.nonce){
             if(null !== await this.get('s/'+this.value.sig)) return new Error('Sig exists');
@@ -654,8 +655,6 @@ class HypertokensContract extends Contract {
             if(null === to_balance) return new Error('Invalid to balance');
         }
         to_balance += amt;
-
-        if(true !== await this.collectGas(address, this.validator_address)) return new Error('Gas error');
 
         const token_exists = await this.get('te/'+this.value.addr+'/'+tick);
         if(null === token_exists){
@@ -702,7 +701,7 @@ class HypertokensContract extends Contract {
 
         await this.put('b/'+address+'/'+tick, from_balance.toString());
         await this.put('b/'+this.value.addr+'/'+tick, to_balance.toString());
-
+        await this.collectGas(this.address, this.validator_address);
         if(true === this.protocol.peer.options.enable_logs){
             console.log('Transferred ticker', this.value.tick.trim().toLowerCase(),
                 ',',
@@ -713,6 +712,23 @@ class HypertokensContract extends Contract {
                 'to', this.value.addr
             )
         }
+    }
+
+    async hasGas(address){
+        let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
+        if(null === tap_deployment) return false;
+        const gas = await this.protocol.safeBigInt(await this.get('gas'));
+        if(null === gas || gas <= 0n) return true;
+        let tap_balance = await this.get(this.protocol.getBalanceKey(address, tap_deployment.tick))
+        if(null === tap_balance){
+            tap_balance = 0n;
+        } else {
+            tap_balance = this.protocol.safeBigInt(tap_balance);
+            if(null === tap_balance) return false;
+        }
+        tap_balance -= gas;
+        if(tap_balance < 0n) return false;
+        return true;
     }
 
     async collectGas(address, validator){
@@ -738,7 +754,9 @@ class HypertokensContract extends Contract {
         tap_balance_validator += gas;
         if(tap_balance < 0n) return new Error('Insufficient funds');
         await this.put(this.protocol.getBalanceKey(address, tap_deployment.tick), tap_balance.toString());
-        await this.put(this.protocol.getBalanceKey(validator, tap_deployment.tick), tap_balance_validator.toString());
+        if(address !== validator){
+            await this.put(this.protocol.getBalanceKey(validator, tap_deployment.tick), tap_balance_validator.toString());
+        }
         return true;
     }
 
@@ -761,6 +779,7 @@ class HypertokensContract extends Contract {
     }
 
     async transferFeature(){
+        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         let address = this.address;
         if(this.value.addr.length !== 64) return new Error('Invalid address');
         if(address.length !== 64) return new Error('Invalid address');
@@ -836,6 +855,7 @@ class HypertokensContract extends Contract {
 
         await this.put(this.protocol.getBalanceKey(address, this.value.tick), balance.toString());
         await this.put(this.protocol.getBalanceKey(this.value.addr, this.value.tick), rec_balance.toString());
+        await this.collectGas(this.address, this.validator_address);
         return true;
     }
 
