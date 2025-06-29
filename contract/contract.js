@@ -353,7 +353,6 @@ class HypertokensContract extends Contract {
     }
 
     async mintfun(){
-        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
@@ -408,8 +407,8 @@ class HypertokensContract extends Contract {
             tap_balance -= spent;
             let gas = await this.protocol.safeBigInt(await this.get('gas'));
             if(null === gas || gas < 0n) gas = 0n;
-            if(tap_balance - gas < 0n) return new Error('Insufficient gas funds');
             if(tap_balance < 0n) return new Error('Insufficient funds');
+            if(tap_balance - gas < 0n) return new Error('No gas funds. Get some TAP.');
             const liq_key = 'liq/'+tick;
             let liquidity = await this.get(liq_key);
             if(null === liquidity){
@@ -515,7 +514,6 @@ class HypertokensContract extends Contract {
     }
 
     async burnfun(){
-        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
@@ -559,6 +557,9 @@ class HypertokensContract extends Contract {
             if(null === tap_balance) return new Error('Invalid balance');
         }
         tap_balance += _return;
+        let gas = await this.protocol.safeBigInt(await this.get('gas'));
+        if(null === gas || gas < 0n) gas = 0n;
+        if(tap_balance - gas < 0n) return new Error('No gas funds. Get some TAP.');
         await this.put(this.protocol.getBalanceKey(this.address, tap_deployment.tick), tap_balance.toString());
         await this.put('b/'+this.address+'/'+tick, from_balance.toString());
         await this.put('rsrv/'+tick, reserve.toString());
