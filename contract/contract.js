@@ -378,6 +378,7 @@ class HypertokensContract extends Contract {
             if(false === verified) return new Error('Not authorized');
             await this.put('s/'+this.value.sig, '');
         }
+        if(this.address === this.graduation_authority) return new Error('Authority cannot take part.');
         const supply = this.protocol.safeBigInt(deployment.supply);
         let amt = this.protocol.safeBigInt(deployment.amt);
         let burned = this.protocol.safeBigInt(deployment.com);
