@@ -262,9 +262,7 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                             Request Withdraw
                         </button>
                         <hr />
-                        Once granted, click on the withdraw requests below to receive your TAP.
-                        <hr/>
-                        Taparooswap is an official partner of the project.
+                        Once granted, click on the withdraw requests below to receive your TAP. You will need the official TAP Wallet.
                         <hr/>
                         <h3>Your Withdraw Requests</h3>
                         <div className="withdraw-list-container">
