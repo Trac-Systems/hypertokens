@@ -7,6 +7,7 @@ import { usePeer } from "../../contexts/peerContext.js";
 import { useNotification } from "../../contexts/useNotification.js";
 import TokenTransferModal from "./TokenTransferModal.js";
 import RedeemModal from "./RedeemModal.js";
+import BurnModal from "./BurnModal.js";
 import b4a from "b4a";
 
 export default function TokenWalletPage({ onBack }) {
@@ -16,7 +17,7 @@ export default function TokenWalletPage({ onBack }) {
     const [tokens, setTokens] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentBlock, setCurrentBlock] = useState(0);
-    const [modal, setModal] = useState(null);       // { mode, tick, humanBal, rawBal, dec }
+    const [modal, setModal] = useState(null);
     const [redeemOpen, setRedeemOpen] = useState(false);
     const firstLoad = useRef(true);
 
@@ -156,39 +157,80 @@ export default function TokenWalletPage({ onBack }) {
                             ? html`<p>You have no tokens.</p>`
                             : tokens.map(({ tick, humanBal, rawBal, dec, deployment }) => {
                                 const lastBlock = Number(deployment.fun.last_block);
-                                const isFailed  = currentBlock > lastBlock && deployment.fun.liq === "0";
-                                const isGrad    = deployment.fun.liq !== undefined && deployment.fun.liq !== "0";
+                                const isFailed =
+                                        currentBlock > lastBlock && deployment.fun.liq === "0";
+                                const isGrad =
+                                        deployment.fun.liq !== undefined &&
+                                        deployment.fun.liq !== "0";
                                 return html`
                                     <div className="token-row" key=${tick}>
                                         <span className="token-name">${tick.toUpperCase()}</span>
-                                        <span className="token-balance">${fnumHuman(humanBal)}</span>
+                                        <span className="token-balance">
+                  ${fnumHuman(humanBal)}
+                </span>
                                         <div className="token-actions">
-                                            ${isFailed && html`
-                                                <button class="hf-modal-btn secondary" onClick=${() => doOp({ op: "refun", tick })}>
+                                            ${isFailed &&
+                                            html`
+                                                <button
+                                                        className="hf-modal-btn secondary"
+                                                        onClick=${() => doOp({ op: "refun", tick })}
+                                                >
                                                     Refun
                                                 </button>`}
-                                            ${isGrad && html`
-                                                <button class="hf-modal-btn secondary" onClick=${() =>
-                                                        setModal({
-                                                            mode: "hyperwarp",
-                                                            tick, humanBal, rawBal, dec
-                                                        })
-                                                }>
+
+                                            ${isGrad &&
+                                            html`
+                                                <button
+                                                        className="hf-modal-btn secondary"
+                                                        onClick=${() =>
+                                                                setModal({
+                                                                    mode: "hyperwarp",
+                                                                    tick,
+                                                                    humanBal,
+                                                                    rawBal,
+                                                                    dec,
+                                                                })}
+                                                >
                                                     Send to Hypermall
                                                 </button>`}
-                                            <button class="hf-modal-btn secondary" onClick=${() =>
-                                                    setModal({
-                                                        mode: "transfer",
-                                                        tick, humanBal, rawBal, dec
-                                                    })
-                                            }>
+
+                                            ${isGrad &&
+                                            html`
+                                                <button
+                                                        className="hf-modal-btn secondary"
+                                                        onClick=${() =>
+                                                                setModal({
+                                                                    mode: "burn",
+                                                                    tick,
+                                                                    humanBal,
+                                                                    rawBal,
+                                                                    dec,
+                                                                })}
+                                                >
+                                                    Burn
+                                                </button>`}
+
+                                            <button
+                                                    className="hf-modal-btn secondary"
+                                                    onClick=${() =>
+                                                            setModal({
+                                                                mode: "transfer",
+                                                                tick,
+                                                                humanBal,
+                                                                rawBal,
+                                                                dec,
+                                                            })}
+                                            >
                                                 Transfer
                                             </button>
                                         </div>
                                     </div>`;
                             })}
 
-            ${modal && html`
+            <!-- both "transfer" and "hyperwarp" open TokenTransferModal -->
+            ${modal &&
+            (modal.mode === "transfer" || modal.mode === "hyperwarp") &&
+            html`
                 <${TokenTransferModal}
                         mode=${modal.mode}
                         maxHuman=${modal.humanBal}
@@ -196,9 +238,24 @@ export default function TokenWalletPage({ onBack }) {
                         decimals=${modal.dec}
                         onConfirm=${({ amt, to }) => {
                             const base = { op: "transfer", tick: modal.tick, amt };
-                            const cmd = modal.mode === "transfer"
-                                    ? { ...base, addr: to.trim(), from: null, sig: null, nonce: null, dta: null }
-                                    : { ...base, addr: peer.contract_instance.graduation_authority, from: null, sig: null, nonce: null, dta: null };
+                            const cmd =
+                                    modal.mode === "transfer"
+                                            ? {
+                                                ...base,
+                                                addr: to.trim(),
+                                                from: null,
+                                                sig: null,
+                                                nonce: null,
+                                                dta: null,
+                                            }
+                                            : {
+                                                ...base,
+                                                addr: peer.contract_instance.graduation_authority,
+                                                from: null,
+                                                sig: null,
+                                                nonce: null,
+                                                dta: null,
+                                            };
                             doOp(cmd);
                             setModal(null);
                         }}
@@ -206,7 +263,26 @@ export default function TokenWalletPage({ onBack }) {
                 />
             `}
 
-            ${redeemOpen && html`
+            <!-- burnflow -->
+            ${modal &&
+            modal.mode === "burn" &&
+            html`
+                <${BurnModal}
+                        tick=${modal.tick}
+                        maxHuman=${modal.humanBal}
+                        maxRaw=${modal.rawBal}
+                        decimals=${modal.dec}
+                        onConfirm=${({ amt }) => {
+                            doOp({ op: "burnfun", tick: modal.tick, amt });
+                            setModal(null);
+                        }}
+                        onClose=${() => setModal(null)}
+                />
+            `}
+
+            <!-- redeem -->
+            ${redeemOpen &&
+            html`
                 <${RedeemModal}
                         onConfirm=${handleRedeem}
                         onClose=${() => setRedeemOpen(false)}

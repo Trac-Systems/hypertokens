@@ -216,8 +216,8 @@ class HypertokensContract extends Contract {
         const _amt = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.amt, this.value.dec));
         const _supply = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.supply, this.value.dec));
         if(isNaN(_dec) || _dec < 0 || _dec > 18) return new Error('Invalid decimals');
-        if(null === _amt || _amt <= 0n || _amt > _supply || _supply <= 0n) return new Error('Invalid amount');
         if(null === _supply || _supply <= 0n) return new Error('Invalid supply');
+        if(null === _amt || _amt <= 0n || _amt > _supply || _supply <= 0n) return new Error('Invalid amount');
         const key = 'd/'+this.protocol.safeJsonStringify(tick);
         const deployment = await this.get(key);
         if(null !== deployment) return new Error('Token exists already');
@@ -227,7 +227,7 @@ class HypertokensContract extends Contract {
         if(null !== _deployment.fun && null !== _deployment.fun.target_price && null !== _deployment.fun.blocks){
             let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
             if(null === tap_deployment) return new Error('TAP token not found');
-            if(_deployment.dec < 18 || tap_deployment.dec < 18) return new Error('Need 18 dec for fun');
+            if(_dec !== 18 || tap_deployment.dec !== 18) return new Error('Need 18 dec for fun');
             const price = this.protocol.safeBigInt(this.protocol.toBigIntString(_deployment.fun.target_price, tap_deployment.dec));
             if(null === price || price <= 0n) return new Error('Invalid tap token price');
             if(null === current_block) return new Error('No blocks registered yet');
