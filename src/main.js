@@ -4,8 +4,8 @@ export * from 'trac-peer/src/functions.js'
 import {default as HypertokensProtocol} from "../contract/protocol.js";
 import {default as HypertokensContract} from "../contract/contract.js";
 import {default as Migration} from "../features/migration/index.js"
-import {default as HypertokensRestApi} from "../features/rest_api/index.js"
-import {TapHypertokens} from "trac-features";
+//import {default as HypertokensRestApi} from "../features/rest_api/index.js"
+//import {TapHypertokens} from "trac-features";
 import fs from 'fs';
 
 console.log('Storage path:', getStorePath());
@@ -64,20 +64,20 @@ rest_opts.port = 3000;
 rest_opts.host = 'localhost';
 
 export const app = new App(msb_opts, peer_opts, [
-    {
+    /*{
         name : 'tap_hypertokens',
         class : TapHypertokens,
         opts : tap_opts
-    },
+    },*/
     {
         name : 'migration',
         class : Migration
-    },
+    }/*,
     {
         name : 'restapi',
         class : HypertokensRestApi,
         opts : rest_opts,
         noadmin : true
-    }
+    }*/
 ]);
 await app.start();
