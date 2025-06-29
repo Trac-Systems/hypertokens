@@ -34,11 +34,16 @@
 .hf-content {
     padding: 1rem 2rem 2rem 2rem;
     overflow-y: auto;
-    /* increase the subtraction so the scrollable area is a bit shorter */
     max-height: calc(100vh - 200px);
 }
 
-/* ── Deploy & Pagination Buttons ── */
+.hf-token-wallet{
+    padding: 1rem 2rem 2rem 2rem;
+    overflow-y: auto;
+    max-height: calc(100vh);
+}
+
+    /* ── Deploy & Pagination Buttons ── */
 .hf-deploy-btn,
 .page-btn {
     background: #4ea8de;

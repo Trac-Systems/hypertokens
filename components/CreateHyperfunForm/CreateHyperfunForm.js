@@ -21,7 +21,7 @@ export default function CreateHyperfunForm({ onClose }) {
     const validate = useCallback(() => {
         const e = {};
         const tick = ticker.trim().toLowerCase();
-        if (!/^[\p{L}\p{N}_-]{1,12}$/u.test(tick)) e.ticker = "1-12 chars, a-z 0-9 _-";
+        if (tick.length === 0) e.ticker = "At least one character. Emojis work.";
 
         if (!/^\d+(?:\.\d{1,18})?$/.test(targetPrice.trim()) || /^0+(?:\.0+)?$/.test(targetPrice.trim())) e.targetPrice = "> 0 (≤18 dp)";
 
@@ -83,7 +83,6 @@ export default function CreateHyperfunForm({ onClose }) {
                         <input
                                 value=${ticker}
                                 onInput=${(e) => setTicker(e.target.value)}
-                                maxLength=${12}
                                 placeholder="ticker"
                                 className=${errs.ticker ? "error" : ""}
                                 autoFocus

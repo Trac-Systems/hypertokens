@@ -135,7 +135,7 @@ export default function TokenWalletPage({ onBack }) {
     };
 
     return html`
-        <div className="hf-content token-wallet">
+        <div className="hf-token-wallet token-wallet">
             <div className="tw-header">
                 <button className="secondary back-btn" onClick=${onBack}>
                     ← Back
