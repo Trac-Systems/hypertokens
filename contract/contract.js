@@ -586,7 +586,6 @@ class HypertokensContract extends Contract {
         const blocks = parseInt(deployment.fun.blocks);
         const start_block = await this.get('strtblck/'+tick);
         if(null === start_block) return new Error('Invalid start block');
-        console.log(current_block, start_block, blocks, deployment.fun.liq)
         if(current_block - start_block > blocks && deployment.fun.liq === '0') {
             const total_spent_key = 'spnt/'+this.address+'/'+tick;
             let total_spent = await this.get(total_spent_key);
