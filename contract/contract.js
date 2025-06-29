@@ -657,15 +657,15 @@ class HypertokensContract extends Contract {
 
         if(true !== await this.collectGas(address, this.validator_address)) return new Error('Gas error');
 
-        const token_exists = await this.get('te/'+this.address+'/'+tick);
+        const token_exists = await this.get('te/'+this.value.addr+'/'+tick);
         if(null === token_exists){
-            let tokens_length = await this.get('tl/'+this.address);
+            let tokens_length = await this.get('tl/'+this.value.addr);
             if(null === tokens_length){
                 tokens_length = 0;
             }
-            await this.put('ti/'+this.address+'/'+tokens_length, this.value.tick.trim().toLowerCase());
-            await this.put('tl/'+this.address, tokens_length + 1);
-            await this.put('te/'+this.address+'/'+tick, true);
+            await this.put('ti/'+this.value.addr+'/'+tokens_length, this.value.tick.trim().toLowerCase());
+            await this.put('tl/'+this.value.addr, tokens_length + 1);
+            await this.put('te/'+this.value.addr+'/'+tick, true);
         }
 
         // global transfer list

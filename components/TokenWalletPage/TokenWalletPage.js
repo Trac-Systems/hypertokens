@@ -65,7 +65,7 @@ export default function TokenWalletPage({ onBack }) {
             const length = await peer.protocol_instance.api.getUserTokensLength(
                 peer.wallet.publicKey
             );
-            for (let i = 0; i < length; i++) {
+            for (let i = length - 1; i >= 0; i--) {
                 const tick = await peer.protocol_instance.api.getUserToken(
                     peer.wallet.publicKey,
                     i
@@ -157,7 +157,7 @@ export default function TokenWalletPage({ onBack }) {
                             : tokens.map(({ tick, humanBal, rawBal, dec, deployment }) => {
                                 const lastBlock = Number(deployment.fun.last_block);
                                 const isFailed  = currentBlock > lastBlock && deployment.fun.liq === "0";
-                                const isGrad    = deployment.fun.liq !== "0";
+                                const isGrad    = deployment.fun.liq !== undefined && deployment.fun.liq !== "0";
                                 return html`
                                     <div className="token-row" key=${tick}>
                                         <span className="token-name">${tick.toUpperCase()}</span>

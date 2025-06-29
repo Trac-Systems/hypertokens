@@ -105,7 +105,7 @@ export default function MintModal({ mint: initial, onClose }) {
 
     /* ────────── 5. status flags ────────── */
     const lastBlock = Number(raw.fun.last_block);
-    const graduated = raw.fun.liq !== "0";
+    const graduated = raw.fun.liq !== undefined && raw.fun.liq !== "0";
     const failed    = currentBlock > lastBlock && raw.fun.liq === "0";
 
     /* ────────── 6. mint / refun actions ────────── */

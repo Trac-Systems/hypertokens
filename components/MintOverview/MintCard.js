@@ -33,7 +33,7 @@ export default function MintCard({ mint, onMint }) {
     const failed    =
         currentBlock - mint.startBlock > mint.deadlineBlock &&
         mint.deployment.fun.liq === "0";
-    const graduated = mint.deployment.fun.liq !== "0";
+    const graduated = mint.deployment.fun.liq !== undefined && mint.deployment.fun.liq !== "0";
 
     return html`
         <div className="mint-card">
