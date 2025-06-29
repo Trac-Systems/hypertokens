@@ -185,7 +185,6 @@ export function TopHeader() {
   Here is how it works:
   
   • Bonding curve similar to Pump.fun with a few tweaks.
-  • On graduations, Token/TAP pairs are listed in Hypermall.io with TAP as liquidity.
   • Mintfun: tokens/TAP listings go to Hypermall.io on graduations.
   • Refun: refund your TAP if graduations fail & hop on the next.
   • Burnfun: burn graduated tokens and get TAP back at a secured floor.
