@@ -2,10 +2,10 @@
   "name": "hypertokens",
   "version": "0.0.1",
   "type": "module",
-  "main": "index.html",
+  "main": "src/main.js",
   "pear": {
     "name": "hypertokens",
-    "type": "desktop",
+    "type": "terminal",
     "gui": {
       "backgroundColor": "#1F2430",
       "height": "768",
@@ -15,6 +15,7 @@
   "dependencies": {
     "bare-http1": "^4.0.2",
     "bare-url": "^2.1.6",
+    "decode-uri-component": "^0.4.1",
     "htm": "^3.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

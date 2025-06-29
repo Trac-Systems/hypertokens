@@ -1,6 +1,7 @@
 import {Feature} from 'trac-peer';
 import http from 'bare-http1';
 import url from 'bare-url';
+import decodeUriComponent from 'decode-uri-component';
 
 export class HypertokensRestApi extends Feature {
 
@@ -24,8 +25,15 @@ export class HypertokensRestApi extends Feature {
         const host = this.host;
         const server = http.createServer(async (req, res) => {
             const parsedUrl = url.parse('http://' + host + req.url);
-            const pathname = parsedUrl.pathname;
-            if(pathname.startsWith('/token')){
+            let pathname = parsedUrl.pathname;
+            let success = false;
+            try{
+                pathname = decodeUriComponent(pathname);
+                success = true;
+            }catch(e){
+                _this.respond(res, { err : 'Invalid uri encoding' }, 500);
+            }
+            if(pathname.startsWith('/token') && true === success){
                 const pieces = pathname.split('/', 3);
                 const ticker = pieces[2];
                 if(ticker !== undefined) {
@@ -39,11 +47,11 @@ export class HypertokensRestApi extends Feature {
                 } else {
                     _this.respond(res, not_found, 404);
                 }
-            } else if(pathname.startsWith('/graduated-length')){
+            } else if(pathname.startsWith('/graduated-length') && true === success){
                 let length = await this.getSigned('grd');
                 if(null === length) length = 0;
                 _this.respond(res, length);
-            } else if(pathname.startsWith('/graduated/')){
+            } else if(pathname.startsWith('/graduated/') && true === success){
                 const pieces = pathname.split('/', 3);
                 const index = parseInt(pieces[2]);
                 if(false === isNaN(index)) {
@@ -56,11 +64,11 @@ export class HypertokensRestApi extends Feature {
                 } else {
                     _this.respond(res, not_found, 404);
                 }
-            } else if(pathname.startsWith('/transferred-length')){
+            } else if(pathname.startsWith('/transferred-length') && true === success){
                 let length = await this.getSigned('tfl');
                 if(null === length) length = 0;
                 _this.respond(res, length);
-            } else if(pathname.startsWith('/transferred/')){
+            } else if(pathname.startsWith('/transferred/') && true === success){
                 const pieces = pathname.split('/', 3);
                 const index = parseInt(pieces[2]);
                 if(false === isNaN(index)) {
@@ -73,11 +81,11 @@ export class HypertokensRestApi extends Feature {
                 } else {
                     _this.respond(res, not_found, 404);
                 }
-            } else if(pathname.startsWith('/tap-transferred-length')){
+            } else if(pathname.startsWith('/tap-transferred-length') && true === success){
                 let length = await this.getSigned('ttfl');
                 if(null === length) length = 0;
                 _this.respond(res, length);
-            } else if(pathname.startsWith('/tap-transferred/')){
+            } else if(pathname.startsWith('/tap-transferred/') && true === success){
                 const pieces = pathname.split('/', 3);
                 const index = parseInt(pieces[2]);
                 if(false === isNaN(index)) {
