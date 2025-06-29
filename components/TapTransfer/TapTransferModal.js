@@ -247,6 +247,8 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                 >
                     Please use the official TAP Wallet and enable 1TX-Transfers.
                 </button>
+                <hr/>
+                Taparooswap is an official partner of the project.
               `}
                     `}
 
@@ -260,7 +262,10 @@ export default function TapTransferModal({ mode = "withdraw", onClose }) {
                             Request Withdraw
                         </button>
                         <hr />
-                        <label>Once granted, click on the withdraw requests below to receive your TAP.</label>
+                        Once granted, click on the withdraw requests below to receive your TAP.
+                        <hr/>
+                        Taparooswap is an official partner of the project.
+                        <hr/>
                         <h3>Your Withdraw Requests</h3>
                         <div className="withdraw-list-container">
                             ${txList.map(({ tx, amount, link }) => html`
