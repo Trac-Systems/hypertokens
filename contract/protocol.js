@@ -344,6 +344,7 @@ class HypertokensProtocol extends Protocol{
         if(res !== false){
             const err = this.peer.protocol_instance.getError(res);
             if(null !== err){
+                console.log('legit', err)
                 return err.message;
             }
         }
@@ -365,6 +366,11 @@ class HypertokensProtocol extends Protocol{
                         target_price : args.funprice,
                         blocks : args.funblocks
                     }
+                } else {
+                    fun = {
+                        target_price : null,
+                        blocks : null
+                    }
                 }
                 const command = {
                     op : 'deploy',
@@ -376,6 +382,7 @@ class HypertokensProtocol extends Protocol{
                     dta : null,
                     fun : fun
                 };
+                console.log(command)
                 await this._transact(command, args);
             } else if (input.startsWith("/hyperfun")) {
                 const args = this.parseArgs(input);
@@ -401,11 +408,11 @@ class HypertokensProtocol extends Protocol{
                 if(args.ticker === undefined) throw new Error('Please specify a ticker');
                 const key = 'd/'+this.safeJsonStringify(args.ticker.trim().toLowerCase());
                 const deployment = await this.get(key);
-                if(null !== deployment){
+                if(deployment !== null){
                     deployment.amt = this.fromBigIntString(deployment.amt, deployment.dec);
                     deployment.supply = this.fromBigIntString(deployment.supply, deployment.dec);
                     deployment.com = this.fromBigIntString(deployment.com, deployment.dec);
-                    if(deployment.fun !== null){
+                    if(deployment.fun !== null && null !== deployment.fun.target_price && null !== deployment.fun.blocks){
                         let tap_deployment = await this.get(this.getDeploymentKey(this.peer.contract_instance.tap_token));
                         deployment.fun.target_price = this.fromBigIntString(deployment.fun.target_price, tap_deployment.dec);
                         deployment.fun.rem = this.fromBigIntString(deployment.fun.rem, deployment.dec);
@@ -424,7 +431,7 @@ class HypertokensProtocol extends Protocol{
                 const key = 'd/'+this.safeJsonStringify(args.ticker.trim().toLowerCase());
                 const deployment = await this.get(key);
                 if(deployment === null) throw new Error('Ticker does not exist');
-                if(deployment.fun !== null){
+                if(deployment.fun !== null && null !== deployment.fun.target_price && null !== deployment.fun.blocks){
                     const command = {
                         op : 'burnfun',
                         tick : args.ticker.trim().toLowerCase(),
@@ -440,7 +447,7 @@ class HypertokensProtocol extends Protocol{
                 const key = 'd/'+this.safeJsonStringify(args.ticker.trim().toLowerCase());
                 const deployment = await this.get(key);
                 if(deployment === null) throw new Error('Ticker does not exist');
-                if(deployment.fun !== null){
+                if(deployment.fun !== null && null !== deployment.fun.target_price && null !== deployment.fun.blocks){
                     const command = {
                         op : 'refun',
                         tick : args.ticker.trim().toLowerCase()
@@ -455,7 +462,7 @@ class HypertokensProtocol extends Protocol{
                 const key = 'd/'+this.safeJsonStringify(args.ticker.trim().toLowerCase());
                 const deployment = await this.get(key);
                 if(deployment === null) throw new Error('Ticker does not exist');
-                if(deployment.fun !== null){
+                if(deployment.fun !== null && null !== deployment.fun.target_price && null !== deployment.fun.blocks){
                     const command = {
                         op : 'mintfun',
                         tick : args.ticker.trim().toLowerCase(),
@@ -487,7 +494,7 @@ class HypertokensProtocol extends Protocol{
                     if(deployment.addr !== undefined && deployment.addr === this.peer.wallet.publicKey){
                         let fun = '';
                         let fun_amt = '';
-                        if(null !== deployment.fun){
+                        if(deployment.fun !== null && null !== deployment.fun.target_price && null !== deployment.fun.blocks){
                             if(args.amount === undefined) throw new Error('HyperFun mints require to specify an amount to mint.');
                             fun = ' --amount ' + args.amount.trim();
                             fun_amt = args.amount.trim();
@@ -565,7 +572,7 @@ class HypertokensProtocol extends Protocol{
                 if(args.amount === undefined) throw new Error('Please specify an amount');
                 const key = 'd/'+this.safeJsonStringify(args.ticker.trim().toLowerCase());
                 const deployment = await this.get(key);
-                if(null !== deployment && null !== deployment.fun && deployment.fun.liq !== '0'){
+                if(null !== deployment && deployment.fun !== null && null !== deployment.fun.target_price && null !== deployment.fun.blocks && deployment.fun.liq !== '0'){
                     const command = {
                         op : 'transfer',
                         tick : args.ticker.trim().toLowerCase(),

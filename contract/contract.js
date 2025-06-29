@@ -21,9 +21,8 @@ class HypertokensContract extends Contract {
                 fun : {
                     $$strict : true,
                     $$type : "object",
-                    $$nullable : true,
-                    target_price : { type : "string", numeric : true, min: 1, max: 38 },
-                    blocks : { type : "string", numeric : true, min: 1, max: 3 }
+                    target_price : { type : "string", numeric : true, min: 1, max: 38, nullable : true },
+                    blocks : { type : "string", numeric : true, min: 1, max: 3, nullable : true }
                 }
             }
         });
@@ -224,7 +223,8 @@ class HypertokensContract extends Contract {
         if(null !== deployment) return new Error('Token exists already');
         const _deployment = this.protocol.safeClone(this.value);
         const current_block = await this.get('currentBlock');
-        if(null !== _deployment.fun){
+        let is_fun = false;
+        if(null !== _deployment.fun && null !== _deployment.fun.target_price && null !== _deployment.fun.blocks){
             let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
             if(null === tap_deployment) return new Error('TAP token not found');
             if(_deployment.dec < 18 || tap_deployment.dec < 18) return new Error('Need 18 dec for fun');
@@ -240,6 +240,7 @@ class HypertokensContract extends Contract {
             _deployment.fun['res'] = '0';
             _deployment.fun['blocks'] = blocks;
             _deployment.fun['last_block'] = current_block + blocks;
+            is_fun = true;
         }
         _deployment.amt = _amt.toString();
         _deployment.supply = _supply.toString();
@@ -259,13 +260,13 @@ class HypertokensContract extends Contract {
             hf_length = 0;
         }
         if(true !== await this.collectGas(this.address, this.validator_address)) return new Error('Gas error');
-        if(null !== _deployment.fun){
+        if(true === is_fun){
             await this.put('strtblck/'+this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase()), current_block);
         }
         await this.put('dli/'+length, key);
-        await this.put('hdli/'+hf_length, key);
+        if(true === is_fun) await this.put('hdli/'+hf_length, key);
         await this.put(length_key, length + 1);
-        await this.put(hf_length_key, hf_length + 1);
+        if(true === is_fun) await this.put(hf_length_key, hf_length + 1);
         await this.put(key, _deployment);
         if(true === this.protocol.peer.options.enable_logs){
             console.log('Deployed ticker', tick,
@@ -282,7 +283,7 @@ class HypertokensContract extends Contract {
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
-        if(null !== deployment.fun) return new Error('No fun');
+        if(null !== deployment.fun.target_price || null !== deployment.fun.blocks) return new Error('No fun');
         if(deployment.signed !== undefined && deployment.addr !== undefined &&
             true === deployment.signed){
             if(null === this.value.nonce) return new Error('No nonce given');
@@ -355,7 +356,7 @@ class HypertokensContract extends Contract {
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
-        if(null === deployment.fun) return new Error('Only fun');
+        if(null === deployment.fun || null === deployment.fun.target_price || null === deployment.fun.blocks) return new Error('Only fun');
         const current_block = await this.get('currentBlock');
         if(null === current_block) return new Error('No blocks registered yet');
         const blocks = parseInt(deployment.fun.blocks);
@@ -521,7 +522,7 @@ class HypertokensContract extends Contract {
         let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
         if(null === tap_deployment) return new Error('TAP token not found');
         if(null === deployment) return new Error('Token does not exist.');
-        if(null === deployment.fun) return new Error('Only fun');
+        if(null === deployment.fun || null === deployment.fun.target_price || null === deployment.fun.blocks) return new Error('Only fun');
         let reserve = await this.get('rsrv/'+tick);
         if(null === reserve){
             reserve = 0n;
@@ -583,7 +584,7 @@ class HypertokensContract extends Contract {
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
-        if(null === deployment.fun) return new Error('Only fun');
+        if(null === deployment.fun || null === deployment.fun.target_price || null === deployment.fun.blocks) return new Error('Only fun');
         const current_block = await this.get('currentBlock');
         if(null === current_block) return new Error('No blocks registered yet');
         const blocks = parseInt(deployment.fun.blocks);
