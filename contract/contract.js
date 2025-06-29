@@ -406,6 +406,9 @@ class HypertokensContract extends Contract {
                 if(null === tap_balance) return new Error('Invalid balance');
             }
             tap_balance -= spent;
+            let gas = await this.protocol.safeBigInt(await this.get('gas'));
+            if(null === gas || gas < 0n) gas = 0n;
+            if(tap_balance - gas < 0n) return new Error('Insufficient gas funds');
             if(tap_balance < 0n) return new Error('Insufficient funds');
             const liq_key = 'liq/'+tick;
             let liquidity = await this.get(liq_key);
@@ -575,7 +578,6 @@ class HypertokensContract extends Contract {
     }
 
     async refun(){
-        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
         if(null === tap_deployment) return new Error('TAP token not found');
         const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
@@ -605,6 +607,9 @@ class HypertokensContract extends Contract {
                 if(null === tap_balance) return new Error('Invalid balance');
             }
             tap_balance += total_spent;
+            let gas = await this.protocol.safeBigInt(await this.get('gas'));
+            if(null === gas || gas < 0n) gas = 0n;
+            if(tap_balance - gas < 0n) return new Error('Invalid gas balance');
             await this.put(this.protocol.getBalanceKey(this.address, tap_deployment.tick), tap_balance.toString())
             await this.put(total_spent_key, '0');
             await this.collectGas(this.address, this.validator_address);
@@ -780,7 +785,6 @@ class HypertokensContract extends Contract {
     }
 
     async transferFeature(){
-        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
         let address = this.address;
         if(this.value.addr.length !== 64) return new Error('Invalid address');
         if(address.length !== 64) return new Error('Invalid address');
@@ -807,8 +811,9 @@ class HypertokensContract extends Contract {
 
         const amt = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.amt, deployment.dec));
         if(null === amt) return new Error('Invalid amount');
-
-        if(balance - amt < 0n) return new Error('Insufficient balance');
+        let gas = await this.protocol.safeBigInt(await this.get('gas'));
+        if(null === gas || gas < 0n) gas = 0n;
+        if(balance - amt - gas < 0n) return new Error('Insufficient balance');
 
         let rec_balance = await this.get(this.protocol.getBalanceKey(this.value.addr, this.value.tick));
 
