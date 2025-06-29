@@ -207,7 +207,7 @@ export default function TokenWalletPage({ onBack }) {
                                                                     dec,
                                                                 })}
                                                 >
-                                                    Burn
+                                                    Burnfun
                                                 </button>`}
 
                                             <button
