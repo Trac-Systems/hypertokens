@@ -189,6 +189,7 @@ export function TopHeader() {
   • Refun: refund your TAP if graduations fail & hop on the next.
   • Burnfun: burn graduated tokens and get TAP back at a secured floor.
   • Advanced options to deploy new tickers.
+  • Fixed gas fee of 0.005 TAP apply per TX (approx. 2 cent)
   
   We guess the rest you may figure yourself, it's fun -- Hyperfun!
                 `}
