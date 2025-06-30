@@ -2,10 +2,10 @@
   "name": "hypertokens",
   "version": "0.0.1",
   "type": "module",
-  "main": "index.html",
+  "main": "src/main.js",
   "pear": {
     "name": "hypertokens",
-    "type": "desktop",
+    "type": "terminal",
     "gui": {
       "backgroundColor": "#1F2430",
       "height": "768",

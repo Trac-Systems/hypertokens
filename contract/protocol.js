@@ -515,19 +515,20 @@ class HypertokensProtocol extends Protocol{
                 for(let i = length - 1 ; i > 0; i--){
                     if(cnt >= 10) break;
                     const tx = await this.api.getTx(i, false);
-                    if(null === tx.err && tx.val.type === 'mint'){
+                    if(null === tx.err && (tx.val.type === 'mint' || tx.val.type === 'mintfun')){
                         const key = 'd/'+this.safeJsonStringify(tx.val.value.tick);
                         const deployment = await this.get(key);
                         if(null !== deployment && out[tx.val.value.tick] === undefined){
                             deployment.amt = this.fromBigIntString(deployment.amt, deployment.dec);
                             deployment.supply = this.fromBigIntString(deployment.supply, deployment.dec);
                             deployment.com = this.fromBigIntString(deployment.com, deployment.dec);
-                            out[tx.val.value.tick] = deployment;
+                            deployment['mintfun'] = tx.val.type === 'mintfun';
+                            console.log(deployment);
+                            out[tx.val.value.tick] = true;
                             cnt += 1;
                         }
                     }
                 }
-                console.log(out);
             } else if (input.startsWith("/transfer")) {
                 const args = this.parseArgs(input);
                 if(args.ticker === undefined) throw new Error('Please specify a ticker');
