@@ -49,6 +49,21 @@ rm -fr temp
 npm update
 pear run . store1
 ```
+To run the Hyperfun app itself (wtih GUI), edit the file package.json and adjust the values:
+
+From this:
+
+```js
+src/main.js
+terminal
+```
+
+to this
+
+```js
+index.html
+desktop
+```
 
 Use the commands in the Hypertokens section to deploy, mint, transfer.
 
