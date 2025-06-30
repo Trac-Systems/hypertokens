@@ -185,6 +185,14 @@ export default function MintModal({ mint: initial, onClose }) {
                 ${failed &&  html`<p className="status-note failed">Graduation failed — you may Refun.</p>`}
                 ${graduated && !failed && html`<p className="status-note graduated">✅ Graduated! The token is being listed on Hypermall with TAP as liquidity.</p>`}
 
+                ${graduated && !failed && html`
+                <button
+                        className="hf-modal-btn primary"
+                        onClick=${() => window.open("https://hypermall.io", "_blank")}
+                >
+                    Run Hypermall to trade ${raw.tick.toUpperCase()}!
+                </button>`}
+                
                 <table className="mint-details-table"><tbody>
                 <tr><th>Supply</th>         <td>${fnum(supply)}</td></tr>
                 <tr><th>Minted</th>         <td>${fnum(done)} (${pct.toFixed(2)}%)</td></tr>
@@ -197,7 +205,7 @@ export default function MintModal({ mint: initial, onClose }) {
                 <tr><th>Deadline block</th>  <td>${lastBlock.toLocaleString()}</td></tr>
                 <tr><th>Current block</th>   <td>${currentBlock.toLocaleString()}</td></tr>
                 </tbody></table>
-
+                
                 ${failed && html`
                     <button
                             className="hf-modal-btn primary action-btn refun"
