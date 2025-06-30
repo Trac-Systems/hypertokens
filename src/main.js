@@ -11,9 +11,9 @@ import fs from 'fs';
 console.log('Storage path:', getStorePath());
 
 const msb_opts = {};
-msb_opts.bootstrap = '54c2623aa400b769b2837873653014587278fb83fd72e255428f78a4ff7bac87';
-msb_opts.channel = '00000000000000000000000trac20msb';
-msb_opts.store_name = getStorePath() + '/t20msb_2';
+msb_opts.bootstrap = 'a4951e5f744e2a9ceeb875a7965762481dab0a7bb0531a71568e34bf7abd2c53';
+msb_opts.channel = '0002tracnetworkmainsettlementbus';
+msb_opts.store_name = getStorePath() + '/hypertokens-msb';
 
 const peer_opts = {};
 peer_opts.protocol = HypertokensProtocol;

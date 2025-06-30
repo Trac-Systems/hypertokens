@@ -905,6 +905,10 @@ class HypertokensContract extends Contract {
 
         balance -= amt;
 
+        let gas = await this.protocol.safeBigInt(await this.get('gas'));
+        if(null === gas || gas < 0n) gas = 0n;
+        if(balance - gas < 0n) return new Error('No gas funds. Get some TAP.');
+
         let length = await this.get(this.protocol.getWithdrawRequestLengthKey());
         if(null === length){
             length = 0;
@@ -924,6 +928,7 @@ class HypertokensContract extends Contract {
         await this.put(this.protocol.getUserWithdrawRequestKey(address, user_request_length), this.protocol.getWithdrawRequestKey(length));
         await this.put(this.protocol.getUserWithdrawRequestLengthKey(address), user_request_length + 1);
         await this.put(this.protocol.getBalanceKey(address, this.value.tick), balance.toString());
+        await this.collectGas(address, this.validator_address);
         console.log('Withdraw request placed', address, this.op.value);
     }
 
