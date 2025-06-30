@@ -5,7 +5,7 @@ class HypertokensContract extends Contract {
         super(protocol, options);
 
         this.tap_token = 'tap';
-        this.graduation_authority = '527a0d51a6122a43995cf5cb211abaf2aaef9d5b8cbb0de356769e6746f844eb';
+        this.graduation_authority = '1f33ae6ed9ed54c2607d1bcd4f7d9f482d155baec9d2d62b21ed70b1fa75ec55';
 
         this.addSchema('deploy', {
             value : {
