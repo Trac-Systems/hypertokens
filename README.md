@@ -2,7 +2,7 @@
 
 ![image](https://github.com/user-attachments/assets/1cb598d9-7fc7-4248-9615-e36268ffd4bb)
 
-Website: https://hyperfun.wtf
+Website / HyperFUN App Downloads: https://hyperfun.wtf
 
 A proposal for a p2p token standard on Trac Network. See /contract/contract.js and /contract/protocol.js.
 
