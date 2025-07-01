@@ -63,8 +63,8 @@ desktop
 to this
 
 ```js
-index.html
-desktop
+src/main.js
+terminal
 ```
 
 Use the commands in the Hypertokens section to deploy, mint, transfer.
