@@ -1,53 +1,106 @@
+import { html } from "htm/react";
+import { createRoot } from "react-dom/client";
+
 import {getStorePath} from './src/functions.js';
-import {App} from './src/app.js';
-export * from 'trac-peer/src/functions.js'
-import {default as HypertokensProtocol} from "./contract/protocol.js";
-import {default as HypertokensContract} from "./contract/contract.js";
-import {default as Migration} from "./features/migration/index.js"
-import fs from 'fs';
+import { app } from "./src/main.js";
+import { PeerProvider } from "./contexts/peerContext.js";
+import { NotificationProvider } from "./contexts/useNotification.js";
+import ToastManager from "./components/toastNotification/ToastManager.js";
+import MintOverview from "./components/MintOverview/MintOverview.js";
+import TokenWalletPage from "./components/TokenWalletPage/TokenWalletPage.js";
+import { WalletSetup } from "./components/WalletSetup/WalletSetup.js";
+import { TopHeader } from "./components/TopHeader/TopHeader.js";
+import { useState, useEffect } from "react";
+import fs from "fs";
 
-console.log('Storage path:', getStorePath());
+/* ── hot-reload helper (dev convenience) ───────────────────── */
+window.reloadCSS = () => {
+    document.querySelectorAll('link[rel="stylesheet"]').forEach((l) => {
+        l.href = l.href.split("?")[0] + "?t=" + Date.now();
+    });
+    return "CSS reloaded 🟢";
+};
 
-const msb_opts = {};
-msb_opts.bootstrap = '54c2623aa400b769b2837873653014587278fb83fd72e255428f78a4ff7bac87';
-msb_opts.channel = '00000000000000000000000trac20msb';
-msb_opts.store_name = getStorePath() + '/t20msb_2';
+async function main() {
+    await app.ready();
+    const peer = app.getPeer();
+    const keyFile = peer.KEY_PAIR_PATH; // absolute path on disk
 
-const peer_opts = {};
-peer_opts.protocol = HypertokensProtocol;
-peer_opts.contract = HypertokensContract;
-peer_opts.bootstrap = 'c8d69852fe7828709349a68c61c3d88ab9078ec4331e07ebaaf1e8b55e67a287';
-peer_opts.channel = '00000000000000000000000002trac20';
-peer_opts.store_name = getStorePath() + '/hypertokens';
-peer_opts.enable_logs = false;
-peer_opts.enable_txlogs = false;
+    function App() {
+        const [view, setView] = useState("overview");
+        useEffect(() => {
+            function onNav(evt) {
+                setView(evt.detail);
+            }
+            window.addEventListener("navigate", onNav);
+            return () => window.removeEventListener("navigate", onNav);
+        }, []);
 
-// upgrade 1 to 2
-const old_path = getStorePath() + "/trac20";
-const new_path = peer_opts.store_name;
-if(false === fs.existsSync(new_path + '/db') &&
-    true === fs.existsSync(old_path + '/db/keypair.json')){
-    fs.mkdirSync(new_path);
-    fs.mkdirSync(new_path + '/db');
-    fs.copyFileSync(old_path + '/db/keypair.json', new_path  + '/db/keypair.json');
-    fs.rmSync(old_path, { recursive: true, force: true });
-}
-
-// upgrade 2 to 3
-const _old_path = getStorePath() + "/trac20_2";
-const _new_path = peer_opts.store_name;
-if(false === fs.existsSync(_new_path + '/db') &&
-    true === fs.existsSync(_old_path + '/db/keypair.json')){
-    fs.mkdirSync(_new_path);
-    fs.mkdirSync(_new_path + '/db');
-    fs.copyFileSync(_old_path + '/db/keypair.json', _new_path  + '/db/keypair.json');
-    fs.rmSync(_old_path, { recursive: true, force: true });
-}
-
-export const app = new App(msb_opts, peer_opts, [
-    {
-        name : 'migration',
-        class : Migration
+        return html`
+      <${NotificationProvider}>
+        <${PeerProvider} peer=${peer}>
+          ${view === "overview"
+            ? html`<${TopHeader} /><${MintOverview} />`
+            : html`<${TokenWalletPage} onBack=${() => setView("overview")} />`}
+        <//>
+        <${ToastManager} />
+      <//>
+    `;
     }
-]);
-await app.start();
+
+    const root = createRoot(document.getElementById("root"));
+
+    const renderMainApp = () => {
+        root.render(html`<${App} />`);
+    };
+
+    /* ---------- determine if initial wizard is needed ---------- */
+
+    let flagDone = false;
+    const store_path = getStorePath();
+    if(fs.existsSync(store_path + '/wallet_setup.json')){
+        try{
+            const setup = JSON.parse(fs.readFileSync(store_path + '/wallet_setup.json'));
+            if(setup.walletSetupDone === 1) flagDone = true;
+        }catch(e){ console.log(e) }
+    }
+
+    let keyExists = false;
+
+    if (fs && keyFile) {
+        try {
+            keyExists = fs.existsSync(keyFile) && fs.statSync(keyFile).size > 0;
+        } catch (e) {
+            console.warn("Error checking keyFile:", e.message);
+            /* no-op, keyExists remains false */
+        }
+    }
+    /* safeguard: if the SDK already has a pubkey we assume a wallet */
+    if (!keyExists && peer.wallet?.publicKey) {
+        console.log("Wallet public key found in SDK, assuming wallet exists.");
+        keyExists = true;
+    }
+
+    // The wizard is needed if the setup flag isn't set OR if the key doesn't exist.
+    // If the flag IS set AND the key DOES exist, we don't need the wizard.
+    // The "Use existing wallet" button effectively sets flagDone to true,
+    // and then onComplete (renderMainApp) is called.
+    // If the user presses "Use existing wallet", we assume they know what they are doing
+    // or the app will handle the case where the key is missing later.
+    const needWizard = !(flagDone && keyExists);
+
+    if (needWizard) {
+        // If the wizard is needed, pass renderMainApp as the onComplete callback
+        root.render(html`
+        <${WalletSetup} peer=${peer} keyFile=${keyFile}
+        onComplete=${renderMainApp} /* MODIFIED: Call renderMainApp instead of
+        reloading */ />
+      `);
+    } else {
+        // If wizard is not needed, render the main app directly
+        renderMainApp();
+    }
+
+}
+
+main();

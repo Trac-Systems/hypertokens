@@ -1,0 +1,47 @@
+/* ===============================
+   File: components/TokenWallet/TokenWalletPage.css
+   =============================== */
+
+.token-wallet h2 {
+    margin: 1rem 0 .75rem;
+    font-size: 1.5rem;
+}
+
+.token-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: .75rem;
+}
+
+.token-name {
+    font-weight: 700;
+    margin-right: .5rem;
+}
+
+.token-balance {
+    color: var(--text-secondary);
+    margin-right: auto;
+}
+
+
+
+.back-btn { margin-bottom: .5rem; }
+
+/* new header container for Back + Redeem */
+.tw-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* style Redeem like your deploy button, pushed to the right */
+.redeem-btn {
+    margin-left: auto;
+}

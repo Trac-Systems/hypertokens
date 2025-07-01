@@ -1,0 +1,80 @@
+/* File: components/TokenWallet/RedeemModal.css */
+
+.redeem-modal {
+    max-width: 32rem;
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+}
+
+.redeem-modal h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+    color: var(--text-primary);
+}
+
+.rm-label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.rm-textarea {
+    width: 100%;
+    min-height: 6rem;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: monospace;
+    resize: vertical;
+    outline: none;
+}
+
+.rm-textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+.rm-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    justify-content: flex-end;
+}
+
+/* shared button reset */
+.rm-actions .hf-modal-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    padding: 0 1.5rem;
+}
+
+.rm-confirm {
+    flex: 1;
+    background: var(--accent-primary);
+    color: #111;
+}
+
+.rm-confirm:hover:not(:disabled) {
+    background: var(--accent-secondary);
+}
+
+.rm-cancel {
+    flex: 0 0 auto;
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    margin-top: 8px;
+}
+
+.rm-cancel:hover {
+    background: rgba(255,255,255,0.05);
+}

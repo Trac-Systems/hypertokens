@@ -1,22 +1,25 @@
 {
   "name": "hypertokens",
-  "version": "0.0.1",
+  "version": "0.4.7",
   "type": "module",
-  "main": "index.js",
+  "main": "index.html",
   "pear": {
     "name": "hypertokens",
-    "type": "terminal",
+    "type": "desktop",
     "gui": {
       "backgroundColor": "#1F2430",
-      "height": "540",
-      "width": "720"
+      "height": "768",
+      "width": "1280"
     }
   },
   "dependencies": {
-    "trac-peer": "^0.2.3",
-    "trac-msb": "^0.1.82",
+    "bare-http1": "^4.0.2",
+    "bare-url": "^2.1.6",
+    "decode-uri-component": "^0.4.1",
     "htm": "^3.1.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "trac-msb": "0.1.82",
+    "trac-peer": "0.2.5"
   }
 }

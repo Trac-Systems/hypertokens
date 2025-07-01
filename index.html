@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hyperfun Desktop</title>
+
+    <link rel="stylesheet" href="./styles/global.css" />
+    <link rel="stylesheet" href="./styles/Header.css" />
+    <!-- Modal‑specific tweaks -->
+    <link rel="stylesheet" href="./styles/ToastNotification.css" />
+    <link rel="stylesheet" href="./components/CreateHyperfunForm/CreateHyperfunForm.css" />
+    <link rel="stylesheet" href="./components/MintOverview/MintOverview.css" />
+    <link rel="stylesheet" href="./components/TapTransfer/TapTransferModal.css" />
+    <link rel="stylesheet" href="./components/TokenWalletPage/TokenWalletPage.css" />
+    <link rel="stylesheet" href="./components/TokenWalletPage/TokenTransferModal.css" />
+    <link rel="stylesheet" href="./components/TokenWalletPage/RedeemModal.css" />
+    <link rel="stylesheet" href="./components/WalletSetup/WalletSetup.css"/>
+    <link rel="stylesheet" href="./components/TopHeader/TopHeader.css"/>
+
+    <style>
+        :root {
+            --bg-primary: #111111;
+            --bg-secondary: #161616;
+            --bg-card: #0c0809;
+            --accent-primary: #4ea8de;
+            --accent-secondary: #64b4ea;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-color: #2c2c2c;
+            --success-color: #2EBD85;
+            --error-color: #F6465C;
+            --warning-color: #fbbf24;
+        }
+
+        pear-ctrl[data-platform="darwin"] {
+            margin-top: 12px;
+            margin-left: 10px;
+        }
+
+        #titlebar {
+            -webkit-app-region: drag;
+            height: 30px;
+            width: 100%;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: var(--bg-primary);
+            z-index: 1000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+            sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        #root {
+            display: flex;
+            flex-direction: column;
+            padding-top: 30px;
+            height: calc(100vh - 30px);
+            width: 100vw;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .app-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            text-align: center;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .loading-content-main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .loading-logo-symbol-wrapper { /* This now only wraps the main H */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: clamp(250px, 50vw, 450px); /* Adjusted size for H without backdrop */
+            height: auto; /* Height will be determined by the image's aspect ratio */
+            max-width: 80vw;
+            margin-bottom: 20px;
+        }
+
+        .loading-logo-main-h { /* The main "H" symbol */
+            width: 100%; /* Fill the wrapper */
+            height: auto;
+            object-fit: contain;
+            margin-left: -80px;
+        }
+
+        .loading-logo-brandname { /* For the "HYPERMALL" text image */
+            width: 300px;
+            max-width: 70%;
+            height: auto;
+            margin-bottom: 30px;
+            object-fit: contain;
+        }
+
+        .loading-spinner-animation {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--accent-primary);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-footer {
+            flex-shrink: 0;
+            padding: 1rem 2rem 2rem 2rem;
+        }
+
+        .loading-footer-image { /* For the footer text image */
+            max-width: 380px; /* Further reduced size for smaller footer text */
+            width: 75%;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+            opacity: 0.75; /* Made slightly more subtle */
+        }
+
+        .loading-message-old {
+            display:none;
+        }
+    </style>
+</head>
+<body>
+<div id="titlebar"><pear-ctrl></pear-ctrl></div>
+<div id="root">
+    <div class="loading-container">
+        <div class="loading-content-main">
+            <div class="loading-logo-symbol-wrapper">
+                <img src="/images/bigH-v1.png" alt="Hyperfun Logo Symbol" class="loading-logo-main-h" />
+            </div>
+            <img src="/images/logo-bigH-v1.png" alt="HYPERMALL" class="loading-logo-brandname" />
+            <div class="loading-spinner-animation"></div>
+        </div>
+        <div class="loading-footer">
+            <img src="/images/footer-bigH-v1_1.png" alt="HyperMall Description" class="loading-footer-image" />
+        </div>
+    </div>
+</div>
+<script type="module" src="./index.js"></script>
+</body>
+</html>

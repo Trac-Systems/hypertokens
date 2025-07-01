@@ -1,0 +1,208 @@
+/* === Sleek SaaS Toast Notification CSS === */
+
+:root {
+  /* --- Global Theme Variables (Adjust to your SaaS app's theme) --- */
+  /* Assuming a dark theme context as per previous interactions */
+  --app-bg-dark: #1a1e29; /* A common dark SaaS background */
+  --app-text-primary-darktheme: #e1e8f0;
+  --app-text-secondary-darktheme: #adb5bd; /* Slightly softer secondary text */
+  --app-border-color-darktheme: #363c4a;
+
+  /* --- Toast Specific Variables --- */
+  --toast-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --toast-bg: #232834; /* Slightly lighter than darkest app bg, or distinct surface */
+  --toast-text-color: var(--app-text-primary-darktheme, #e1e8f0);
+  --toast-secondary-text-color: var(--app-text-secondary-darktheme, #adb5bd);
+  --toast-border-radius: 6px; /* Clean, not too rounded */
+  --toast-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Softer, more subtle shadow */
+  --toast-max-width: 380px;
+  --toast-min-width: 300px;
+  --toast-padding-vertical: 0.875rem; /* 14px */
+  --toast-padding-horizontal: 1.125rem; /* 18px */
+  --toast-accent-bar-width: 4px;
+
+  /* Status Colors (Used for accent bar and potentially icons) */
+  --toast-success-accent: #10b981; /* Emerald Green */
+  --toast-error-accent: #f43f5e; /* Rose Red */
+  --toast-warning-accent: #f59e0b; /* Amber-500 */
+  --toast-info-accent: #3b82f6; /* Blue-500 */
+
+  /* Animation */
+  --toast-animation-duration: 0.3s;
+  --toast-exit-animation-duration: 0.25s;
+}
+
+/* --- Notification Wrapper (Positioning Container) --- */
+.notification-wrapper {
+  position: fixed;
+  top: 24px; /* Consistent spacing from top */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  width: var(--toast-max-width);
+  min-width: var(--toast-min-width);
+  max-width: calc(100% - 32px); /* Responsive margin */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--toast-animation-duration) ease-out;
+}
+
+.notification-wrapper.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- Individual Notification Styling --- */
+.notification {
+  font-family: var(--toast-font-family);
+  width: 100%;
+  border-radius: var(--toast-border-radius);
+  box-shadow: var(--toast-shadow);
+  background-color: var(--toast-bg);
+  color: var(--toast-text-color);
+  border-left: var(--toast-accent-bar-width) solid transparent; /* Accent bar */
+  overflow: hidden;
+  opacity: 0; /* Initial state for individual animation */
+  transform: translateY(-10px);
+  animation: toastFadeInSlideDown var(--toast-animation-duration)
+    cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  position: relative; /* For absolute positioning of close button if needed differently */
+}
+
+@keyframes toastFadeInSlideDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification.exiting {
+  animation: toastFadeOutSlideUp var(--toast-exit-animation-duration)
+    cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes toastFadeOutSlideUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* The direct child div inside .notification (content area) */
+.notification > div {
+  display: flex;
+  align-items: center; /* Vertically center icon (if any), text, and close button */
+  padding: var(--toast-padding-vertical) var(--toast-padding-horizontal);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500; /* Regular weight for SaaS often looks cleaner */
+  line-height: 1.45; /* Good line height for readability */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Placeholder for an Icon (add an <i> or <span> in your JS) */
+.toast-icon {
+  margin-right: 0.75rem; /* Space between icon and text */
+  font-size: 1.25rem; /* Example size */
+  line-height: 1; /* Critical for alignment */
+  flex-shrink: 0;
+  /* Color will be set by type */
+}
+
+/* Message Text (assuming it's the direct text node after icon, or wrapped in a span) */
+/* The text will take up remaining space if an icon and close button are present */
+/* This part relies on the direct text node or a specific wrapper for the message.
+     If your message is just text inside .notification > div, it works.
+     If you wrap message in <span class="toast-message-text">, target that.
+  */
+.notification > div > *:not(.toast-icon):not(.notification-close) {
+  flex-grow: 1; /* Allow message text to take available space */
+}
+
+/* --- Notification Type Accents --- */
+.notification.success {
+  border-left-color: var(--toast-success-accent);
+}
+.notification.success .toast-icon {
+  color: var(--toast-success-accent);
+}
+
+.notification.error {
+  border-left-color: var(--toast-error-accent);
+}
+.notification.error .toast-icon {
+  color: var(--toast-error-accent);
+}
+
+.notification.warning {
+  border-left-color: var(--toast-warning-accent);
+}
+.notification.warning .toast-icon {
+  color: var(--toast-warning-accent);
+}
+/* For warning, text color might need adjustment if background is light */
+/* .notification.warning { color: #422006; } // Example if toast-bg was light */
+
+.notification.info {
+  border-left-color: var(--toast-info-accent);
+}
+.notification.info .toast-icon {
+  color: var(--toast-info-accent);
+}
+
+/* --- Minimal Close Button --- */
+.notification-close {
+  background: none;
+  border: none;
+  font-family: Arial, sans-serif; /* Common 'x' font */
+  font-size: 1.1rem; /* A bit smaller for minimal look */
+  font-weight: normal; /* Not too bold */
+  color: var(--toast-secondary-text-color); /* Muted color */
+  cursor: pointer;
+  padding: 0.35rem; /* Slightly larger click target */
+  margin-left: 0.875rem; /* Space from text */
+  line-height: 1;
+  border-radius: 50%; /* Make it circular for hover effect */
+  flex-shrink: 0;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.notification-close:hover {
+  color: var(--toast-text-color); /* Slightly more prominent on hover */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.05
+  ); /* Very subtle hover bg for dark themes */
+}
+
+/* Remove type-specific class from close button if not needed for color override */
+/* .notification.success .notification-close { color: var(--toast-success-text); } */
+/* .notification.error .notification-close { color: var(--toast-error-text); } */
+/* ...etc. The default color: inherit from .notification-close is often fine. */
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 480px) {
+  .notification-wrapper {
+    top: 16px;
+    width: calc(100% - 24px);
+  }
+  .notification > div {
+    padding: 0.75rem 1rem; /* Slightly less padding */
+    font-size: 0.8125rem; /* 13px */
+  }
+  .toast-icon {
+    font-size: 1.1rem;
+    margin-right: 0.6rem;
+  }
+  .notification-close {
+    font-size: 1rem;
+    padding: 0.25rem;
+    margin-left: 0.6rem;
+  }
+}

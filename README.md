@@ -1,12 +1,25 @@
 # Hypertokens
 
-A proposal for a gasless p2p token standard on Trac Network. See /contract/contract.js and /contract/protocol.js.
+A proposal for a p2p token standard on Trac Network. See /contract/contract.js and /contract/protocol.js.
+
+The protocol requires TAP tokens from Bitcoin as app-gas.
 
 Hypertokens define the most simplistic token standard possible and can be operated in terminal (no special transactions required).
 
 It supports signed and fair mints. Signed mints enable deployers to limit mints for selected wallets.
 
-Inter-contract interaction can be achieved through the use of Trac Features (e.g. for marketplaces like [Hypermall](https://github.com/Trac-Systems/hypermall-downloads)).
+Additionally, there is also curve based minting, akin to Pump.fun but with a few tweaks:
+
+- You can set a target price in TAP tokens (see Bitcoin's TAP Protocol)
+- You can set the supply
+- You can set block durations from 1-300 blocks per mint (Bitcoin blocks)
+- Uses 1/3 of the TAP liquidity for secured floors
+- Mintfun: Mint tokens for TAP a the current curve price (cannot get higher than target price)
+- Refun: If a token isn't graduating, you can refund yourself in TAP and try to mint another token
+- Burnfun: Burn tokens to return TAP at the 1/3 price-ratio
+- Graduated tokens are available as pairs and 2/3 of the TAP liquidity at [Hypermall](https://hypermall.io)
+- Gas applies for transactions (0.01 TAP / TX)
+- Min. graduation liquidity required to get a token listed in Hypermall: 3,000 TAP
 
 This contract is instantly executable, see instructions below.
 
@@ -37,6 +50,21 @@ cp -fr temp/* .
 rm -fr temp
 npm update
 pear run . store1
+```
+If you don't want to run the Hyperfun GUI, then change these package.json value and restart:
+
+From this:
+
+```js
+index.html
+desktop
+```
+
+to this
+
+```js
+index.html
+desktop
 ```
 
 Use the commands in the Hypertokens section to deploy, mint, transfer.

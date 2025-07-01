@@ -1,0 +1,83 @@
+/* File: components/TokenWallet/TokenTransferModal.css */
+
+.token-transfer-modal {
+    max-width: 32rem;
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+}
+
+.token-transfer-modal h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+    color: var(--text-primary);
+}
+
+.tt-label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.tt-label span {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.tt-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+}
+
+.tt-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.tt-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+/* shared button reset */
+.tt-actions .hf-modal-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    padding: 0 1.5rem;
+}
+
+/* Confirm expands */
+.tt-confirm {
+    flex: 1;
+    background: var(--accent-primary);
+    color: #111;
+}
+
+.tt-confirm:hover:not(:disabled) {
+    background: var(--accent-secondary);
+}
+
+/* Cancel fixed size, same height */
+.tt-cancel {
+    flex: 0 0 auto;
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    margin-top: 8px;
+}
+
+.tt-cancel:hover {
+    background: rgba(255,255,255,0.05);
+}
+

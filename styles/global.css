@@ -1,0 +1,245 @@
+/* * src/hypermall/desktop/styles/global.css
+ *
+ * Global styles for the HyperMall Trading Platform
+ * * This file contains:
+ * - Common layout elements
+ * - Dashboard grid structure
+ * - Card and panel styling
+ * - Loading and error state styling
+ * - View navigation styles
+ * * Note: Component-specific styles are in their own CSS files
+ */
+
+/* ===== LAYOUT CONTAINERS ===== */
+
+/* * Main application container
+ * Holds the entire app content (excluding header)
+ */
+.app-container {
+  flex: 1; /* Take up all available space */
+  padding-top: 1.5rem; /* Consistent inner spacing */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main page title */
+.app-title {
+  font-size: 1.75rem;
+  color: var(--text-primary);
+}
+
+/* ===== VIEW NAVIGATION ===== */
+
+/* Container for view navigation */
+.view-navigation {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+/* View tabs container */
+.view-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+/* Individual view tab */
+.view-tab {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.375rem 0.375rem 0 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.view-tab:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary); /* Updated */
+}
+
+.view-tab.active {
+  color: var(--accent-primary);
+  background-color: rgba(
+    197,
+    67,
+    89,
+    0.1
+  ); /* Updated to use --accent-primary with alpha */
+}
+
+.view-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -0.5rem;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-primary);
+}
+
+/* App content area */
+.app-content {
+  flex: 1;
+}
+
+/* ===== DASHBOARD LAYOUT ===== */
+
+/* * Dashboard grid container
+   * On mobile: single column
+   * On tablet: two columns
+   * On desktop: three columns
+   */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column by default (mobile) */
+  gap: 1.5rem; /* Space between dashboard cards */
+}
+
+/* Responsive layout: tablet screens */
+@media (min-width: 768px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Make the wallet operations span full width */
+  .wallet-operations-section {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Responsive layout: desktop screens */
+@media (min-width: 1200px) {
+  .dashboard {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Reset wallet operations to single column on large screens */
+  .wallet-operations-section {
+    grid-column: auto;
+  }
+}
+
+/* ===== CARD COMPONENTS ===== */
+
+/* * Dashboard card - base styles
+   * Used for all major content sections (user info, listings, etc.)
+   */
+.dashboard-card {
+  background-color: var(--bg-card);
+  border-radius: 0.5rem; /* Rounded corners */
+  border: 1px solid var(--border-color); /* Subtle border */
+  overflow: hidden; /* Ensures content doesn't overflow rounded corners */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Subtle shadow for depth */
+}
+
+/* Card header/title bar */
+.card-title {
+  font-size: 1.125rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.02
+  ); /* Slightly lighter than card background - Kept as is for subtle effect */
+}
+
+/* Card content area */
+.card-content,
+.info-content {
+  padding: 1.5rem;
+}
+
+/* ===== LOADING STATES ===== */
+
+/* * Loading container
+   * Displays while content is being fetched from the network
+   */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-tertiary);
+}
+
+/* Animated loading spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(197, 67, 89, 0.2); /* Updated to use --accent-primary with alpha */
+  border-radius: 50%;
+  border-top: 3px solid var(--accent-primary);
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+/* Spinner animation keyframes */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading text message */
+.loading-text {
+  font-size: 0.875rem;
+}
+
+/* ===== ERROR STATES ===== */
+
+/* * Error container
+   * Displays when an error occurs (API failures, etc.)
+   */
+.error-container {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: rgba(
+    246,
+    70,
+    92,
+    0.1
+  ); /* Updated to use --error-color with alpha */
+  border: 1px solid var(--error-color);
+  border-radius: 0.375rem;
+  color: var(--error-color);
+  margin: 1rem 0;
+}
+
+/* Error icon (exclamation mark) */
+.error-icon {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--error-color);
+  color: var(--text-primary); /* Updated */
+}
+
+/* Error message text */
+.error-message {
+  font-size: 0.875rem;
+}

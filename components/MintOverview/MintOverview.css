@@ -1,0 +1,337 @@
+/* ===============================
+   File: components/MintOverview/MintOverview.css
+   =============================== */
+
+/* ── Header & Layout ── */
+.hf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+.hf-logo {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+.hf-balance {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 500;
+}
+.hf-balance button {
+    background: #4ea8de;
+    border: none;
+    padding: .25rem .6rem;
+    border-radius: 6px;
+    color: #121212;
+    cursor: pointer;
+    font-size: .875rem;
+}
+
+.hf-content {
+    padding: 1rem 2rem 2rem 2rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+.hf-token-wallet{
+    padding: 1rem 2rem 2rem 2rem;
+    overflow-y: auto;
+    max-height: calc(100vh);
+}
+
+    /* ── Deploy & Pagination Buttons ── */
+.hf-deploy-btn,
+.page-btn {
+    background: #4ea8de;
+    border: none;
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    color: #121212;
+    cursor: pointer;
+}
+.hf-deploy-btn:hover,
+.page-btn:hover {
+    background: #64b4ea;
+}
+
+/* ── Mint Lanes ── */
+.mint-lane {
+    margin-bottom: 2rem;
+}
+.mint-lane h2 {
+    margin: 0 0 .5rem .25rem;
+    font-size: 1.25rem;
+}
+
+/* ── Card Row ── */
+.mint-scroll {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* ── Mint Card ── */
+.mint-card {
+    flex: 0 0 220px;
+    width: 220px;
+    min-width: 220px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 1rem;
+    color: var(--text-primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+.mint-card h3 {
+    font-size: 1rem;
+    margin: 0 0 .5rem;
+    text-transform: uppercase;
+    overflow: hidden;
+}
+.mint-card p {
+    font-size: .85rem;
+    margin: .15rem 0;
+}
+.mint-btn {
+    margin-top: auto;
+    background: #4ea8de;
+    border: none;
+    padding: .5rem 0;
+    border-radius: 6px;
+    color: #121212;
+    cursor: pointer;
+}
+.mint-btn:hover {
+    background: #64b4ea;
+}
+
+/* ── Pagination Bar ── */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.page-indicator {
+    font-size: .9rem;
+    color: var(--text-secondary);
+}
+
+/* ── Secondary Button ── */
+button.secondary {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: .5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+button.secondary:hover {
+    background: rgba(255,255,255,.05);
+}
+
+/* ── Modal: Full-Screen Mint View ── */
+.mint-modal-fullscreen {
+    position: relative;
+    width: 90vw;
+    max-width: 36rem;
+    height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    background: var(--bg-secondary);
+}
+
+/* close “×” */
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+/* ── Progress Bar (track + fill) ── */
+.mint-progress-wrapper {
+    position: relative;
+    height: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--border-color);   /* track */
+    border-radius: .75rem;
+    overflow: hidden;
+}
+
+.mint-progress {                       /* moving fill */
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;                         /* width is set inline via style */
+    background: var(--accent-secondary);
+    transition: width 0.3s;
+}
+.mint-progress.graduated  { background: var(--success-color); }
+.mint-progress.failed     { background: var(--error-color) !important; }
+
+.mint-pct {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    line-height: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+
+/* ── Status Notes ── */
+.status-note {
+    margin-bottom: 1rem;
+}
+.status-note.failed {
+    color: var(--error-color);
+}
+.status-note.graduated {
+    color: var(--success-color);
+}
+
+/* ── Details Table ── */
+.mint-details p {
+    margin: .25rem 0;
+    font-size: .95rem;
+}
+
+/* ── Input Row ── */
+.mint-input-row {
+    margin-bottom: 1.5rem;
+}
+.mint-input-row label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: .5rem;
+}
+.mint-input-row input {
+    width: 100%;
+    padding: .75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+/* ── Action Button & Notes ── */
+.hf-modal-btn.primary.action-btn {
+    width: 100%;
+    padding: 1rem 0;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.gas-note {
+    font-size: .85rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.error-text {
+    color: var(--error-color);
+    margin-top: .5rem;
+    text-align: center;
+}
+
+
+/* ── Data Table in Mint Modal ── */
+.mint-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+.mint-details-table th,
+.mint-details-table td {
+    padding: 0.5rem 1rem;
+    text-align: left;
+}
+.mint-details-table th {
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+    width: 40%;
+}
+.mint-details-table td {
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+/* ------------------------------------------------------------------------
+   TAP controls container
+   ------------------------------------------------------------------------ */
+.tap-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-card);
+}
+
+/* Slightly tighten up the tap-balance label */
+.tap-balance {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Override small spacing on the secondary buttons inside tap-controls */
+.tap-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* Push “Your Hypertokens” and “Deploy” to the right */
+.hf-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+/* Give the hypertokens button a little margin so it’s not jammed against the Tap block */
+.hypertokens-btn {
+    margin-left: auto;
+}
+
+#hf-search-input{
+    margin-top: 10px;
+}
+
+/* ========== Tap‐controls box ========== */
+.tap-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin: 0 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.tap-balance {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+
+
