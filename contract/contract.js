@@ -186,20 +186,17 @@ class HypertokensContract extends Contract {
             if(false === _this.validateSchema('feature_entry', _this.op)) return;
             if(true === await _this.get('migration1')) return;
             if(_this.op.key.startsWith('deploy_')) {
-                _this.address = _this.op.value.initiator;
-                delete _this.op.value.initiator;
-                _this.value = _this.op.value;
-                await _this.deploy();
+                const address = _this.op.value.initiator;
+                const value = _this.op.value;
+                await _this._deploy(value, address, address);
             } else if(_this.op.key.startsWith('mint_')) {
-                _this.address = _this.op.value.initiator;
-                delete _this.op.value.initiator;
-                _this.value = _this.op.value;
-                await _this.mint();
+                const address = _this.op.value.initiator;
+                const value = _this.op.value;
+                await _this._mint(value, address, address);
             } else if(_this.op.key.startsWith('transfer_')) {
-                _this.address = _this.op.value.initiator;
-                delete _this.op.value.initiator;
-                _this.value = _this.op.value;
-                await _this.transfer();
+                const address = _this.op.value.initiator;
+                const value = _this.op.value;
+                await _this._transfer(value, address, address);
             } else if(_this.op.key === 'migration1') {
                 console.log('migration finished.');
                 await _this.put('migration1', true);
@@ -210,19 +207,23 @@ class HypertokensContract extends Contract {
     }
 
     async deploy(){
-        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
-        const tick = this.value.tick.trim().toLowerCase();
+        return await this._deploy(this.value, this.address, this.validator_address);
+    }
+
+    async _deploy(thisValue, thisAddress, thisValidatorAddress){
+        if(false === await this.hasGas(thisAddress)) return new Error('No gas funds. Get some TAP.');
+        const tick = thisValue.tick.trim().toLowerCase();
         if(['tap', 'trac', 'pipe', 'gib', 'dmt-nat', 'nat', 'hypermall'].includes(tick)) return new Error('This token is not mintable');
-        const _dec = parseInt(this.value.dec);
-        const _amt = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.amt, this.value.dec));
-        const _supply = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.supply, this.value.dec));
+        const _dec = parseInt(thisValue.dec);
+        const _amt = this.protocol.safeBigInt(this.protocol.toBigIntString(thisValue.amt, thisValue.dec));
+        const _supply = this.protocol.safeBigInt(this.protocol.toBigIntString(thisValue.supply, thisValue.dec));
         if(isNaN(_dec) || _dec < 0 || _dec > 18) return new Error('Invalid decimals');
         if(null === _supply || _supply <= 0n) return new Error('Invalid supply');
         if(null === _amt || _amt <= 0n || _amt > _supply || _supply <= 0n) return new Error('Invalid amount');
         const key = 'd/'+this.protocol.safeJsonStringify(tick);
         const deployment = await this.get(key);
         if(null !== deployment) return new Error('Token exists already');
-        const _deployment = this.protocol.safeClone(this.value);
+        const _deployment = this.protocol.safeClone(thisValue);
         const current_block = await this.get('currentBlock');
         let is_fun = false;
         if(null !== _deployment.fun && null !== _deployment.fun.target_price && null !== _deployment.fun.blocks){
@@ -247,9 +248,9 @@ class HypertokensContract extends Contract {
         _deployment.supply = _supply.toString();
         _deployment.dec = _dec;
         _deployment.com = '0';
-        _deployment.signed = this.value.signed !== undefined && true === this.value.signed;
-        _deployment.addr = this.address;
-        _deployment.dta = this.value.dta !== undefined ? this.value.dta : null;
+        _deployment.signed = thisValue.signed !== undefined && true === thisValue.signed;
+        _deployment.addr = thisAddress;
+        _deployment.dta = thisValue.dta !== undefined ? thisValue.dta : null;
         const length_key = 'dl';
         const hf_length_key = 'hdl';
         let length = await this.get(length_key);
@@ -261,14 +262,14 @@ class HypertokensContract extends Contract {
             hf_length = 0;
         }
         if(true === is_fun){
-            await this.put('strtblck/'+this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase()), current_block);
+            await this.put('strtblck/'+this.protocol.safeJsonStringify(thisValue.tick.trim().toLowerCase()), current_block);
         }
         await this.put('dli/'+length, key);
         if(true === is_fun) await this.put('hdli/'+hf_length, key);
         await this.put(length_key, length + 1);
         if(true === is_fun) await this.put(hf_length_key, hf_length + 1);
         await this.put(key, _deployment);
-        await this.collectGas(this.address, this.validator_address);
+        await this.collectGas(thisAddress, thisValidatorAddress);
         if(true === this.protocol.peer.options.enable_logs){
             console.log('Deployed ticker', tick,
                 ',',
@@ -276,29 +277,33 @@ class HypertokensContract extends Contract {
                 ',',
                 'amount:', this.protocol.fromBigIntString(_deployment.amt, _deployment.dec),
                 'by',
-                this.address)
+                thisAddress)
         }
     }
 
     async mint(){
-        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
-        const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
+        return await this._mint(this.value, this.address, this.validator_address);
+    }
+
+    async _mint(thisValue, thisAddress, thisValidatorAddress){
+        if(false === await this.hasGas(thisAddress)) return new Error('No gas funds. Get some TAP.');
+        const tick = this.protocol.safeJsonStringify(thisValue.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
         if(null !== deployment.fun.target_price || null !== deployment.fun.blocks) return new Error('No fun');
         if(deployment.signed !== undefined && deployment.addr !== undefined &&
             true === deployment.signed){
-            if(null === this.value.nonce) return new Error('No nonce given');
-            if(null === this.value.sig) return new Error('No sig given');
-            if(null !== await this.get('s/'+this.value.sig)) return new Error('Sig exists');
-            let sig_value = this.value.tick.trim().toLowerCase() + this.address + this.protocol.peer.bootstrap;
-            if(null !== this.value.dta) {
-                sig_value += this.value.dta;
+            if(null === thisValue.nonce) return new Error('No nonce given');
+            if(null === thisValue.sig) return new Error('No sig given');
+            if(null !== await this.get('s/'+thisValue.sig)) return new Error('Sig exists');
+            let sig_value = thisValue.tick.trim().toLowerCase() + thisAddress + this.protocol.peer.bootstrap;
+            if(null !== thisValue.dta) {
+                sig_value += thisValue.dta;
             }
             const verified = this.protocol.peer.wallet.verify(
-                this.value.sig, sig_value + this.value.nonce, deployment.addr);
+                thisValue.sig, sig_value + thisValue.nonce, deployment.addr);
             if(false === verified) return new Error('Not authorized');
-            await this.put('s/'+this.value.sig, '');
+            await this.put('s/'+thisValue.sig, '');
         }
         const supply = this.protocol.safeBigInt(deployment.supply);
         let amt = this.protocol.safeBigInt(deployment.amt);
@@ -307,7 +312,7 @@ class HypertokensContract extends Contract {
         let left = supply - com;
         if(left > 0n){
             if(amt > left) amt = left;
-            let balance = await this.get('b/'+this.address+'/'+tick);
+            let balance = await this.get('b/'+thisAddress+'/'+tick);
             if(null === balance){
                 balance = 0n;
             } else {
@@ -318,26 +323,26 @@ class HypertokensContract extends Contract {
             com += amt;
             deployment.com = com.toString();
             await this.put('d/'+tick, deployment);
-            await this.put('b/'+this.address+'/'+tick, balance.toString());
-            const token_exists = await this.get('te/'+this.address+'/'+tick);
+            await this.put('b/'+thisAddress+'/'+tick, balance.toString());
+            const token_exists = await this.get('te/'+thisAddress+'/'+tick);
             if(null === token_exists){
-                let tokens_length = await this.get('tl/'+this.address);
+                let tokens_length = await this.get('tl/'+thisAddress);
                 if(null === tokens_length){
                     tokens_length = 0;
                 }
-                await this.put('ti/'+this.address+'/'+tokens_length, this.value.tick.trim().toLowerCase());
-                await this.put('tl/'+this.address, tokens_length + 1);
-                await this.put('te/'+this.address+'/'+tick, true);
+                await this.put('ti/'+thisAddress+'/'+tokens_length, thisValue.tick.trim().toLowerCase());
+                await this.put('tl/'+thisAddress, tokens_length + 1);
+                await this.put('te/'+thisAddress+'/'+tick, true);
             }
-            await this.collectGas(this.address, this.validator_address);
+            await this.collectGas(thisAddress, thisValidatorAddress);
             if(true === this.protocol.peer.options.enable_logs){
-                console.log('Minting ticker', this.value.tick.trim().toLowerCase(),
+                console.log('Minting ticker', thisValue.tick.trim().toLowerCase(),
                     ',',
                     'completed ', this.protocol.fromBigIntString(deployment.com, deployment.dec),
                     '/',
                     this.protocol.fromBigIntString(deployment.supply, deployment.dec),
                     'by',
-                    this.address)
+                    thisAddress)
             }
         } else {
             return new Error('Invalid amount or minted out');
@@ -623,27 +628,31 @@ class HypertokensContract extends Contract {
     }
 
     async transfer(){
-        if(false === await this.hasGas(this.address)) return new Error('No gas funds. Get some TAP.');
-        let address = this.address;
-        if(null !== this.value.from && null !== this.value.sig && null !== this.value.nonce){
-            if(null !== await this.get('s/'+this.value.sig)) return new Error('Sig exists');
-            let sig_value = this.value.tick.trim().toLowerCase() + this.value.addr + this.value.amt + this.value.from + this.protocol.peer.bootstrap;
-            if(null !== this.value.dta) {
-                sig_value += this.value.dta;
+        return await this._transfer(this.value, this.address, this.validator_address);
+    }
+
+    async _transfer(thisValue, thisAddress, thisValidatorAddress){
+        if(false === await this.hasGas(thisAddress)) return new Error('No gas funds. Get some TAP.');
+        let address = thisAddress;
+        if(null !== thisValue.from && null !== thisValue.sig && null !== thisValue.nonce){
+            if(null !== await this.get('s/'+thisValue.sig)) return new Error('Sig exists');
+            let sig_value = thisValue.tick.trim().toLowerCase() + thisValue.addr + thisValue.amt + thisValue.from + this.protocol.peer.bootstrap;
+            if(null !== thisValue.dta) {
+                sig_value += thisValue.dta;
             }
             const verified = this.protocol.peer.wallet.verify(
-                this.value.sig, sig_value + this.value.nonce, this.value.from);
+                thisValue.sig, sig_value + thisValue.nonce, thisValue.from);
             if(false === verified) return new Error('Not authorized');
-            await this.put('s/'+this.value.sig, '');
-            address = this.value.from;
+            await this.put('s/'+thisValue.sig, '');
+            address = thisValue.from;
         }
-        if((address+'').trim().toLowerCase() === (this.value.addr+'').trim().toLowerCase()) return new Error('Cannot send to yourself');
-        const tick = this.protocol.safeJsonStringify(this.value.tick.trim().toLowerCase());
+        if((address+'').trim().toLowerCase() === (thisValue.addr+'').trim().toLowerCase()) return new Error('Cannot send to yourself');
+        const tick = this.protocol.safeJsonStringify(thisValue.tick.trim().toLowerCase());
         const deployment = await this.get('d/'+tick);
         if(null === deployment) return new Error('Token does not exist.');
-        if(this.value.addr.length !== 64) return new Error('Invalid address');
+        if(thisValue.addr.length !== 64) return new Error('Invalid address');
         if(address.length !== 64) return new Error('Invalid address');
-        const amt = this.protocol.safeBigInt(this.protocol.toBigIntString(this.value.amt, deployment.dec));
+        const amt = this.protocol.safeBigInt(this.protocol.toBigIntString(thisValue.amt, deployment.dec));
         if(null === amt || amt <= 0n) return new Error('Invalid amount');
         let from_balance = await this.get('b/'+address+'/'+tick);
         if(null === from_balance){
@@ -654,7 +663,7 @@ class HypertokensContract extends Contract {
         }
         from_balance -= amt;
         if(from_balance < 0n) return new Error('Insufficient funds');
-        let to_balance = await this.get('b/'+this.value.addr+'/'+tick);
+        let to_balance = await this.get('b/'+thisValue.addr+'/'+tick);
         if(null === to_balance){
             to_balance = 0n;
         } else {
@@ -663,15 +672,15 @@ class HypertokensContract extends Contract {
         }
         to_balance += amt;
 
-        const token_exists = await this.get('te/'+this.value.addr+'/'+tick);
+        const token_exists = await this.get('te/'+thisValue.addr+'/'+tick);
         if(null === token_exists){
-            let tokens_length = await this.get('tl/'+this.value.addr);
+            let tokens_length = await this.get('tl/'+thisValue.addr);
             if(null === tokens_length){
                 tokens_length = 0;
             }
-            await this.put('ti/'+this.value.addr+'/'+tokens_length, this.value.tick.trim().toLowerCase());
-            await this.put('tl/'+this.value.addr, tokens_length + 1);
-            await this.put('te/'+this.value.addr+'/'+tick, true);
+            await this.put('ti/'+thisValue.addr+'/'+tokens_length, thisValue.tick.trim().toLowerCase());
+            await this.put('tl/'+thisValue.addr, tokens_length + 1);
+            await this.put('te/'+thisValue.addr+'/'+tick, true);
         }
 
         // global transfer list
@@ -680,22 +689,22 @@ class HypertokensContract extends Contract {
             length = 0;
         }
         await this.put('tfi/'+length, {
-            tick : this.value.tick.trim().toLowerCase(),
+            tick : thisValue.tick.trim().toLowerCase(),
             from : address,
-            to : this.value.addr,
+            to : thisValue.addr,
             amt : amt.toString(),
-            dta : this.value.dta,
+            dta : thisValue.dta,
             tx : this.tx
         });
         await this.put('tfl', length + 1);
 
         // receiver transfer list, referencing global list
-        let to_length = await this.get('tflt/'+this.value.addr);
+        let to_length = await this.get('tflt/'+thisValue.addr);
         if(null === to_length){
             to_length = 0;
         }
-        await this.put('tflti/'+this.value.addr+'/'+to_length, length);
-        await this.put('tflt/'+this.value.addr, to_length + 1);
+        await this.put('tflti/'+thisValue.addr+'/'+to_length, length);
+        await this.put('tflt/'+thisValue.addr, to_length + 1);
 
         // sender transfer list, referencing global list
         let from_length = await this.get('tflf/'+address);
@@ -707,23 +716,23 @@ class HypertokensContract extends Contract {
         await this.put('tflf/'+address, from_length + 1);
 
         await this.put('b/'+address+'/'+tick, from_balance.toString());
-        await this.put('b/'+this.value.addr+'/'+tick, to_balance.toString());
-        await this.collectGas(this.address, this.validator_address);
+        await this.put('b/'+thisValue.addr+'/'+tick, to_balance.toString());
+        await this.collectGas(thisAddress, thisValidatorAddress);
         if(true === this.protocol.peer.options.enable_logs){
-            console.log('Transferred ticker', this.value.tick.trim().toLowerCase(),
+            console.log('Transferred ticker', thisValue.tick.trim().toLowerCase(),
                 ',',
                 'amount', this.protocol.fromBigIntString(amt.toString(), deployment.dec),
                 ',',
                 'from',address,
                 ',',
-                'to', this.value.addr
+                'to', thisValue.addr
             )
         }
     }
 
     async hasGas(address){
         let tap_deployment = await this.get(this.protocol.getDeploymentKey(this.tap_token));
-        if(null === tap_deployment) return false;
+        if(null === tap_deployment) return true;
         const gas = await this.protocol.safeBigInt(await this.get('gas'));
         if(null === gas || gas <= 0n) return true;
         let tap_balance = await this.get(this.protocol.getBalanceKey(address, tap_deployment.tick))

@@ -91,7 +91,7 @@ export default function MintModal({ mint: initial, onClose }) {
 
             let minliq = await peer.protocol_instance.getSigned('minliq');
             if(null === minliq){
-                minliq = '0;'
+                minliq = '0'
             }
 
             let liq = await peer.protocol_instance.getSigned('liq/'+JSON.stringify(r.tick));

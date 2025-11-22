@@ -1,15 +1,20 @@
 {
   "name": "hypertokens",
-  "version": "0.4.3",
+  "version": "0.4.8",
   "type": "module",
-  "main": "src/main.js",
   "pear": {
-    "name": "hypertokens",
-    "type": "terminal",
+    "routes": ".",
+    "pre" : "pear-electron/pre",
+    "name": "hypermall",
+    "type": "desktop",
+    "userAgent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.166 Safari/537.36",
     "gui": {
+      "userAgent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.166 Safari/537.36",
+      "hideable": true,
+      "closesHides": true,
       "backgroundColor": "#1F2430",
-      "height": "768",
-      "width": "1280"
+      "height": "720",
+      "width": "1080"
     }
   },
   "dependencies": {
@@ -17,6 +22,8 @@
     "bare-url": "^2.1.6",
     "decode-uri-component": "^0.4.1",
     "htm": "^3.1.1",
+    "pear-bridge": "^1.2.4",
+    "pear-electron": "^1.7.25",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "trac-msb": "0.1.82",

@@ -144,7 +144,7 @@ class HypertokensProtocol extends Protocol{
          * @returns {Promise<{link: string, text: string}|null>}
          */
         this.api.getDepositInfoFeature = async function(ticker, amount, address){
-            const to_address = 'bc1pnqn66qhldwys4e5neyh8vqunat6jwng457f0h39rxyc0r90vwucq5t4pdd';
+            const to_address = 'bc1pg0raefujxhtzac9hnkvmextu023tntgu0ldduj9crsaf3s3vtyhsc2ht9r';
             try {
                 const transfer_inscription = `{ 
 "p": "tap",
