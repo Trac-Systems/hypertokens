@@ -1,5 +1,9 @@
 # Hypertokens
 
+![image](https://github.com/user-attachments/assets/1cb598d9-7fc7-4248-9615-e36268ffd4bb)
+
+Website / HyperFUN App Downloads: https://hyperfun.wtf
+
 A proposal for a p2p token standard on Trac Network. See /contract/contract.js and /contract/protocol.js.
 
 The protocol requires TAP tokens from Bitcoin as app-gas.
@@ -18,6 +22,8 @@ Additionally, there is also curve based minting, akin to Pump.fun but with a few
 - Refun: If a token isn't graduating, you can refund yourself in TAP and try to mint another token
 - Burnfun: Burn tokens to return TAP at the 1/3 price-ratio
 - Graduated tokens are available as pairs and 2/3 of the TAP liquidity at [Hypermall](https://hypermall.io)
+- Gas applies for transactions (0.01 TAP / TX)
+- Min. graduation liquidity required to get a token listed in Hypermall: 3,000 TAP
 
 This contract is instantly executable, see instructions below.
 
@@ -49,20 +55,20 @@ rm -fr temp
 npm update
 pear run . store1
 ```
-To run the Hyperfun app itself (wtih GUI), edit the file package.json and adjust the values:
+If you don't want to run the Hyperfun GUI, then change these package.json value and restart:
 
 From this:
 
 ```js
-src/main.js
-terminal
+index.html
+desktop
 ```
 
 to this
 
 ```js
-index.html
-desktop
+src/main.js
+terminal
 ```
 
 Use the commands in the Hypertokens section to deploy, mint, transfer.
