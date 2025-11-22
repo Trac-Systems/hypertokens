@@ -35,6 +35,8 @@ Make sure to have git and node installed.
 git clone https://github.com/Trac-Systems/hypertokens.git
 ```
 
+## Run in GUI mode
+
 ```js
 cd hypertokens
 npm install -g pear
@@ -55,20 +57,10 @@ rm -fr temp
 npm update
 pear run . store1
 ```
-If you don't want to run the Hyperfun GUI, then change these package.json value and restart:
-
-From this:
+If you don't want to run the Hyperfun GUI, then simply run
 
 ```js
-index.html
-desktop
-```
-
-to this
-
-```js
-src/main.js
-terminal
+pear run src/main.js store1
 ```
 
 Use the commands in the Hypertokens section to deploy, mint, transfer.
