@@ -1,6 +1,6 @@
 {
   "name": "hypertokens",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "type": "module",
   "pear": {
     "routes": ".",
@@ -24,8 +24,8 @@
     "htm": "^3.1.1",
     "pear-bridge": "^1.2.4",
     "pear-electron": "^1.7.25",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "trac-msb": "0.1.82",
     "trac-peer": "0.2.5"
   }
